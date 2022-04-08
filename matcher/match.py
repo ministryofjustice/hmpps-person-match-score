@@ -5,10 +5,7 @@ import pandas
 from . import model
 from . import sql_functions
 from . import standardisation_functions
-
 from textdistance import levenshtein, jaro_winkler
-
-
 from flaskr.db import get_db
 
 bp = flask.Blueprint('match', __name__, url_prefix='/match')
