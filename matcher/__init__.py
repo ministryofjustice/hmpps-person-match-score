@@ -44,11 +44,8 @@ def create_app(test_config=None):
 
     @app.route('/')
     def hello():
-        app.logger.debug("Hello, World!")
         app.logger.info("Hello, World!")
-        app.logger.warning("Hello, World!")
-        app.logger.error("Hello, World!")
-        return 'Hello, World!'
+        return '<h2>Hello, World!</h2>'
 
     db.init_app(app)
 

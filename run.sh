@@ -1,4 +1,7 @@
 #!/bin/bash
 export FLASK_APP=matcher
 export FLASK_ENV=development
-flask run
+
+#source $(pipenv --venv)/bin/activate
+#flask run
+poetry run flask run
