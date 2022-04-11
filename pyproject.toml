@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "flask-project"
+name = "hmpps-person-match-score"
 version = "0.1.0"
 description = ""
 authors = ["Mark Berridge <mark.berridge@digital.justice.gov.uk>"]
