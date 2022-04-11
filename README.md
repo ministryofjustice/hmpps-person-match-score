@@ -23,7 +23,6 @@ Install using poetry
 
 ## TODO
 
-- better URL path
 - unit tests
 - ping & health check
 - instrument
