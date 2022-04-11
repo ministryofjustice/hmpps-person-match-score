@@ -27,7 +27,7 @@ def runner(app):
 
 
 def test_match(client):
-    response = client.post("/match/match", json=valid_sample)
+    response = client.post("/match", json=valid_sample)
     assert response is not None
     assert response.status_code == 200
     assert response.json['match_probability']['0'] == 0.9172587927

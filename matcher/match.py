@@ -8,10 +8,9 @@ from . import model
 from . import sql_functions
 from . import standardisation_functions
 
-bp = flask.Blueprint('match', __name__, url_prefix='/match')
+blueprint = flask.Blueprint('match', __name__)
 
-
-@bp.route('/match', methods=['POST'])
+@blueprint.route('/match', methods=['POST'])
 def match():
 
     logging.info("match requested")

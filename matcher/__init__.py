@@ -42,13 +42,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/')
-    def hello():
-        app.logger.info("Hello, World!")
-        return '<h2>Hello, World!</h2>'
-
     db.init_app(app)
 
-    app.register_blueprint(match.bp)
+    app.register_blueprint(match.blueprint)
 
     return app
