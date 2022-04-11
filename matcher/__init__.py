@@ -1,6 +1,6 @@
 import os
-import flask
 from logging.config import dictConfig
+import flask
 from . import db, match
 
 
