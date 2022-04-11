@@ -9,10 +9,6 @@ Install using poetry
 
 `poetry install`
 
-Initialise the database
-
-`./init-db.sh`
-
 ## Test
 
 `poetry run pytest`
@@ -32,7 +28,6 @@ Initialise the database
 - ping & health check
 - instrument
 - app insights custom events
-- auto init DB
 - improve database table management
 - package
 - dockerfile
