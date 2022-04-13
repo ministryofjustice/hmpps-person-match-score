@@ -1,5 +1,6 @@
 /instance/
 __pycache__/
+/dist/
 
 ### Pycharm IDEA ###
 .idea

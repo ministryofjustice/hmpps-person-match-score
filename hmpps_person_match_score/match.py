@@ -3,17 +3,23 @@ import logging
 import flask
 import pandas
 from textdistance import levenshtein, jaro_winkler
-from flaskr.db import get_db
+from .db import get_db
 from . import model
 from . import sql_functions
 from . import standardisation_functions
 
 blueprint = flask.Blueprint('match', __name__)
 
+
+@blueprint.route('/ping', methods=['GET'])
+def ping():
+    return "pong"
+
+
 @blueprint.route('/match', methods=['POST'])
 def match():
 
-    logging.info("match requested")
+    logging.info("Match score requested")
     data = pandas.read_json(json.dumps(flask.request.get_json()), dtype=str)
 
     data = standardisation_functions.standardise_pnc_number(data, pnc_col='pnc_number')
@@ -22,7 +28,7 @@ def match():
     data = standardisation_functions.fix_zero_length_strings(data)
 
     response = score(data)
-    logging.info("match completed")
+    logging.info("Match score completed")
     return response
 
 
