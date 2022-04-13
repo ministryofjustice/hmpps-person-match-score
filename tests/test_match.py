@@ -1,5 +1,5 @@
 import pytest
-from matcher import create_app
+from hmpps_person_match_score import create_app
 
 
 @pytest.fixture()

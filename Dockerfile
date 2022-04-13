@@ -1,0 +1,58 @@
+# syntax=docker/dockerfile:1
+FROM python:3.9.12-alpine3.15 as base
+
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+##############
+# BUILD stage
+##############
+FROM base as build
+
+ENV PIP_DEFAULT_TIMEOUT=100 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VERSION=1.1.13
+
+# build-time OS dependencies
+RUN apk add --no-cache gcc musl-dev libffi-dev g++
+
+# install Poetry
+RUN pip install "poetry==$POETRY_VERSION"
+
+# create virtual environment
+RUN python -m venv /venv
+
+# install Python dependencies in virtual environment
+COPY pyproject.toml poetry.lock .
+RUN poetry export -f requirements.txt --output requirements.txt
+RUN /venv/bin/pip install -r requirements.txt
+
+# build the app in virtual environment
+COPY . .
+RUN poetry build
+RUN /venv/bin/pip install dist/*.whl
+
+##############
+# FINAL stage
+##############
+FROM base as final
+
+# runtime OS dependencies
+RUN apk add --no-cache libstdc++
+
+# TODO create app user (sqlite can't create instance file atm unless root)
+# RUN addgroup -g 1001 -S appuser && adduser -u 1001 -S appuser -G appuser
+# RUN chown -R appuser:appuser .
+# USER 1001
+
+# copy the built virtual environment and entry point
+COPY --from=build /venv /venv
+COPY docker-entrypoint.sh wsgi.py .
+
+EXPOSE 5000
+
+CMD ["./docker-entrypoint.sh"]
