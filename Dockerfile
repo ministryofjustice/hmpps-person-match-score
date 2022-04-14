@@ -44,14 +44,16 @@ FROM base as final
 # runtime OS dependencies
 RUN apk add --no-cache libstdc++
 
-# TODO create app user (sqlite can't create instance file atm unless root)
-# RUN addgroup -g 1001 -S appuser && adduser -u 1001 -S appuser -G appuser
-# RUN chown -R appuser:appuser .
-# USER 1001
-
 # copy the built virtual environment and entry point
 COPY --from=build /venv /venv
+RUN mkdir /venv/var
 COPY docker-entrypoint.sh wsgi.py .
+
+# create app user
+RUN addgroup -g 1001 -S appuser && adduser -u 1001 -S appuser -G appuser
+RUN chown -R appuser:appuser /venv/var/
+RUN chown -R appuser:appuser .
+USER 1001
 
 EXPOSE 5000
 
