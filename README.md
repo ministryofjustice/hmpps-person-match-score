@@ -30,17 +30,21 @@ Developed using [PyCharm](https://www.jetbrains.com/pycharm/download/)
 
 `poetry export --without-hashes -f requirements.txt --output requirements.txt`
 
-## TODO
+## TODO - PiC
 
-- unit tests
-- override flask SECRET_KEY
 - health check for k8s liveness and readiness probes
+- override flask SECRET_KEY
 - instrument
 - app insights custom events
-- improve database table management - concurrency?
-- Dockerfile - run as app user - database only starts as root ATM 
+- unit tests for web api wrapper
 - helm
 - CI/CD
+
+### TODO - Panagiotis
+- change from embedded DB to PySpark
+- unit tests for data science functions
+- change input/output to JSON
+- (later) move to stand-alone Splink
 
 ## Notes
 
