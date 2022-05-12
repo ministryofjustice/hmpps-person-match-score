@@ -1,12 +1,16 @@
 import json
 import logging
 import flask
-import pandas
-from textdistance import levenshtein, jaro_winkler
-from .db import get_db
-from . import model
-from . import sql_functions
-from . import standardisation_functions
+import pandas as pd
+from hmpps_person_match_score.utility_functions.demo_utils import get_spark
+from hmpps_person_match_score.standardisation_functions.names import standardise_names
+from hmpps_person_match_score.standardisation_functions.date_of_birth import standardise_dob, null_suspicious_dob_std
+from hmpps_person_match_score.standardisation_functions.fix_string import fix_zero_length_strings
+from hmpps_person_match_score.standardisation_functions.pnc_number import standardise_pnc_number
+from splink.model import load_model_from_json
+from splink.blocking import block_using_rules
+from splink.gammas import add_gammas
+from splink.expectation_step import run_expectation_step
 
 blueprint = flask.Blueprint('match', __name__)
 
@@ -20,51 +24,42 @@ def ping():
 def match():
 
     logging.info("Match score requested")
-    data = pandas.read_json(json.dumps(flask.request.get_json()), dtype=str)
+    
+    # spark session
+    spark = get_spark()
+    
+    data = pd.read_json(json.dumps(flask.request.get_json()), dtype=str)
+    df = spark.createDataFrame(data)
 
-    data = standardisation_functions.standardise_pnc_number(data, pnc_col='pnc_number')
-    data = standardisation_functions.standardise_dob(data, dob_col='dob')
-    data = standardisation_functions.standardise_names(data, name_cols=['first_name', 'surname'])
-    data = standardisation_functions.fix_zero_length_strings(data)
+    # standardise
+    df_std_names = standardise_names(df=df, name_cols=["first_name", "surname"]) 
+    df_std_dob = standardise_dob(df=df_std_names, dob_col="dob") 
+    df_std_dob_null = null_suspicious_dob_std(df=df_std_dob, dob_col="dob_std") 
+    df_pnc_std = standardise_pnc_number(df=df_std_dob_null, pnc_col="pnc_number")
+    df_std = fix_zero_length_strings(df=df_pnc_std)
+    
+    # import model
+    saved_model = load_model_from_json("model/saved_model.json")
 
-    response = score(data)
+    response = score(df_std)
     logging.info("Match score completed")
     return response
 
 
 def score(data):
-    with get_db() as conn:
-        cursor = conn.cursor()
-
-        # Register SQL functions
-        # TODO register functions once on startup
-        conn.create_function("concat", -1, sql_functions.concat)
-        conn.create_function("jaro_winkler_sim", 2, jaro_winkler)
-        conn.create_function("Dmetaphone", 1, sql_functions.Dmetaphone)
-        conn.create_function("levenshtein", 2, levenshtein)
-        conn.create_function("datediff", 2, sql_functions.datediff)
-
-        # TODO create unique database tables
-        data.to_sql(name='df', con=conn, if_exists='replace', index=False)
-        cursor.execute(f"""CREATE TABLE df_comparison AS {model.df_comparison}""")
-        cursor.execute(f"""CREATE TABLE df_with_gamma AS {model.df_with_gamma}""")
-        cursor.execute(f"""CREATE TABLE df_with_gamma_probs AS {model.df_with_gamma_probs}""")
-        cursor.execute(f"""CREATE TABLE df_e AS {model.df_e}""")
-
-        json_output = pandas.read_sql("""select * from df_e""", con=conn).to_json()
+    
+    df_comparison = block_using_rules(settings=saved_model.current_settings_obj.settings_dict, df=data, spark=spark) 
+    df_gammas = add_gammas(df_comparison=df_comparison, settings_dict=saved_model.current_settings_obj.settings_dict, spark=spark) 
+    df_e = run_expectation_step(df_with_gamma=df_gammas, model=saved_model, spark=spark)
+    
+    json_output = df_e.toPandas().to_json()
         # TODO remove PII from logging
-        logging.info({
-            'msg': 'scored outcome',
-            'read_sql': json_output,
-        })
-
-        # TODO clean up database tables reliably
-        cursor.execute("DROP TABLE IF EXISTS df_comparison")
-        cursor.execute("DROP TABLE IF EXISTS df_with_gamma")
-        cursor.execute("DROP TABLE IF EXISTS df_with_gamma_probs")
-        cursor.execute("DROP TABLE IF EXISTS df_e")
-
-        return json.loads(json_output)
+    logging.info({
+        'msg': 'scored outcome', 
+        'read_sql': json_output
+    })
+    
+    return json.loads(json_output)
 
 
 class UnsupportedError(Exception):
