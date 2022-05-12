@@ -8,7 +8,7 @@ def get_spark():
     # Splink
     conf.set(
         "spark.jars",
-        "jars/scala-udf-similarity-0.0.8.jar,jars/graphframes-0.8.0-spark3.0-s_2.12.jar",
+        "hmpps_person_match_score/jars/scala-udf-similarity-0.0.8.jar,hmpps_person_match_score/jars/graphframes-0.8.0-spark3.0-s_2.12.jar",
     )
 
     sc = SparkContext.getOrCreate(conf=conf)
