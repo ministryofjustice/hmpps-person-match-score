@@ -24,31 +24,30 @@ def ping():
 def match():
 
     logging.info("Match score requested")
-    
-    # spark session
-    spark = get_spark()
-    
     data = pd.read_json(json.dumps(flask.request.get_json()), dtype=str)
-    df = spark.createDataFrame(data)
-
-    # standardise
-    df_std_names = standardise_names(df=df, name_cols=["first_name", "surname"]) 
-    df_std_dob = standardise_dob(df=df_std_names, dob_col="dob") 
-    df_std_dob_null = null_suspicious_dob_std(df=df_std_dob, dob_col="dob_std") 
-    df_pnc_std = standardise_pnc_number(df=df_std_dob_null, pnc_col="pnc_number")
-    df_std = fix_zero_length_strings(df=df_pnc_std)
-    
-    # import model
-    saved_model = load_model_from_json("model/saved_model.json")
-
-    response = score(df_std)
+    response = score(data)
     logging.info("Match score completed")
     return response
 
 
 def score(data):
     
-    df_comparison = block_using_rules(settings=saved_model.current_settings_obj.settings_dict, df=data, spark=spark) 
+    # spark session
+    spark = get_spark()
+    
+    # import model
+    saved_model = load_model_from_json("hmpps_person_match_score/model/saved_model.json")
+    
+    # standardise
+    df = spark.createDataFrame(data)
+    df_std_names = standardise_names(df=df, name_cols=["first_name", "surname"]) 
+    df_std_dob = standardise_dob(df=df_std_names, dob_col="dob") 
+    df_std_dob_null = null_suspicious_dob_std(df=df_std_dob, dob_col="dob_std") 
+    df_pnc_std = standardise_pnc_number(df=df_std_dob_null, pnc_col="pnc_number")
+    df_std = fix_zero_length_strings(df=df_pnc_std)
+    
+    # score
+    df_comparison = block_using_rules(settings=saved_model.current_settings_obj.settings_dict, df=df_std, spark=spark) 
     df_gammas = add_gammas(df_comparison=df_comparison, settings_dict=saved_model.current_settings_obj.settings_dict, spark=spark) 
     df_e = run_expectation_step(df_with_gamma=df_gammas, model=saved_model, spark=spark)
     
