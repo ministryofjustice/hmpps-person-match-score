@@ -10,10 +10,10 @@ def spark():
     
     conf = SparkConf()
 
-    conf.set("spark.sql.shuffle.partitions", "1")
-    conf.set("spark.jars.ivy", "/home/jovyan/.ivy2/")
-    conf.set("spark.driver.memory", "4g")
-    conf.set("spark.sql.shuffle.partitions", "24")
+#     conf.set("spark.sql.shuffle.partitions", "1")
+#     conf.set("spark.jars.ivy", "/home/jovyan/.ivy2/")
+#     conf.set("spark.driver.memory", "4g")
+#     conf.set("spark.sql.shuffle.partitions", "24")
 
     sc = SparkContext.getOrCreate(conf=conf)
 
