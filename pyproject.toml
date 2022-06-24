@@ -16,6 +16,9 @@ pandas = "^1.3.3"
 Flask = "^2.1.1"
 click = "^8.1.2"
 gunicorn = "^20.1.0"
+pyspark = "^3.1.1"
+splink = {git = "https://github.com/moj-analytical-services/splink.git", rev = "v1.0.6"}
+py4j = "^0.10.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.1"

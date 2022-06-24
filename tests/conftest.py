@@ -1,26 +1,22 @@
+import os
+from pathlib import Path
 import pytest
+from hmpps_person_match_score.spark import spark
 
-import pyspark
-from pyspark import SparkContext, SparkConf
-from pyspark.sql import SparkSession
-from pyspark.sql import types
+
+def get_jars():
+    # TODO Remove hack to change directory up from tests
+    if os.getcwd().endswith('tests'):
+        os.chdir("..")
+
+    # TODO Remove duplicate declaration of jar files
+    j = ['scala-udf-similarity-0.0.8.jar', 'graphframes-0.8.0-spark3.0-s_2.12.jar']
+    jar_paths = [os.path.join(os.getcwd(), 'hmpps_person_match_score/jars', jar) for jar in j]
+    jars = ",".join(jar_paths)
+    return jars
+
 
 @pytest.fixture(scope="function")
-def spark():
-    
-    conf = SparkConf()
-
-    conf.set("spark.sql.shuffle.partitions", "1")
-    conf.set("spark.jars",
-        "hmpps_person_match_score/jars/scala-udf-similarity-0.0.8.jar,hmpps_person_match_score/jars/graphframes-0.8.0-spark3.0-s_2.12.jar",)
-    conf.set("spark.driver.memory", "4g")
-    conf.set("spark.sql.shuffle.partitions", "24")
-
-    sc = SparkContext.getOrCreate(conf=conf)
-
-    spark = SparkSession(sc)
-
-
-    SPARK_EXISTS = True
-
-    yield spark
+def spark_session():
+    session = spark(get_jars())
+    yield session

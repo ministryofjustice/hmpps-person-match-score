@@ -1,11 +1,12 @@
+import logging
 import os
 from logging.config import dictConfig
 import flask
-from . import db, match
+from . import spark, match
+from pathlib import Path
 
 
 def create_app(test_config=None):
-
     dictConfig({
         'version': 1,
         'formatters': {'default': {
@@ -24,9 +25,19 @@ def create_app(test_config=None):
 
     # create and configure the app
     app = flask.Flask(__name__, instance_relative_config=True)
+
+    model = os.path.join(app.root_path, 'model', 'saved_model.json')
+
+    # Spark jars that provide extended string comparison functions such as Jaro Winkler
+    j = ['scala-udf-similarity-0.0.8.jar', 'graphframes-0.8.0-spark3.0-s_2.12.jar']
+    jar_paths = [os.path.join(app.root_path, 'jars', jar) for jar in j]
+    jars = ",".join(jar_paths)
+    logging.info("Configuring jars: " + jars)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'hmpps_person_match_score.sqlite'),
+        MODEL=model,
+        JARS=jars
     )
 
     if test_config is None:
@@ -36,14 +47,8 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
-
-    db.init_app(app)
-
     app.register_blueprint(match.blueprint)
+
+    # spark.init_app(app)
 
     return app

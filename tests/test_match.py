@@ -2,7 +2,7 @@ import pytest
 from hmpps_person_match_score import create_app
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def app():
     app = create_app()
     app.config.update({
