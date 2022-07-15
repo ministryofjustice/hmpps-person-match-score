@@ -54,6 +54,6 @@ Developed using [PyCharm](https://www.jetbrains.com/pycharm/download/)
 ```
 curl -i \
     -H "Content-Type: application/json" \
-    -X POST -d "{"unique_id":{"0":"861","1":"862"},"first_name":{"0":"Lily","1":"Lily"},"surname":{"0":"Robinson","1":"Robibnson"},"dob":{"0":"2009-07-06","1":"2009-07-06"},"pnc_number":{"0":"2001/0141640Y","1":"None"},"source_dataset":{"0":"libra","1":"delius"}}" \
+    -X POST -d "{\"unique_id\":{\"0\":\"861\",\"1\":\"862\"},\"first_name\":{\"0\":\"Lily\",\"1\":\"Lily\"},\"surname\":{\"0\":\"Robinson\",\"1\":\"Robibnson\"},\"dob\":{\"0\":\"2009-07-06\",\"1\":\"2009-07-06\"},\"pnc_number\":{\"0\":\"2001/0141640Y\",\"1\":\"None\"},\"source_dataset\":{\"0\":\"libra\",\"1\":\"delius\"}}" \
     http://127.0.0.1:5000/match
 ```
