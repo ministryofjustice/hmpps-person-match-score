@@ -27,7 +27,7 @@ RUN pip install "poetry==$POETRY_VERSION"
 RUN python -m venv /venv
 
 # install Python dependencies in virtual environment
-COPY pyproject.toml poetry.lock .
+COPY pyproject.toml poetry.lock ./
 RUN poetry export -f requirements.txt --output requirements.txt
 RUN /venv/bin/pip install -r requirements.txt
 
@@ -47,7 +47,7 @@ RUN apk add --no-cache libstdc++
 # copy the built virtual environment and entry point
 COPY --from=build /venv /venv
 RUN mkdir /venv/var
-COPY docker-entrypoint.sh wsgi.py .
+COPY docker-entrypoint.sh wsgi.py ./
 
 # create app user
 RUN addgroup -g 1001 -S appuser && adduser -u 1001 -S appuser -G appuser
