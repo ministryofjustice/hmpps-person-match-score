@@ -1,0 +1,17 @@
+---
+generic-service:
+  ingress:
+    host: hmpps-person-match-score-preprod.hmpps.service.justice.gov.uk
+    tlsSecretName: court-probation-preprod-cert-secret
+
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 2
+
+  resources:
+    limits:
+      cpu: 5000m
+      memory: 1200Mi
+    requests:
+      cpu: 250m
+      memory: 350Mi
