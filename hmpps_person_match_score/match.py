@@ -16,6 +16,19 @@ def ping():
     return "pong"
 
 
+@blueprint.route('/health', methods=['GET'])
+def health():
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute('SELECT 1')
+            result = cursor.fetchone()
+            return result is not None and 'UP'
+    except Exception as e:
+        print(e)
+        return 'DOWN', 503
+
+
 @blueprint.route('/match', methods=['POST'])
 def match():
 

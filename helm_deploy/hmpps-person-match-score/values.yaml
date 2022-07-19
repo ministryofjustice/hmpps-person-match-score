@@ -12,6 +12,14 @@ generic-service:
     host: app-hostname.local    # override per environment
     path: /
 
+  livenessProbe:
+    httpGet:
+      path: /health
+  readinessProbe:
+    httpGet:
+      path: /health
+
+
   autoscaling:
     enabled: true
     targetCPUUtilizationPercentage: 100

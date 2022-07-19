@@ -1,3 +1,4 @@
+from hmpps_person_match_score import db
 import pytest
 from hmpps_person_match_score import create_app
 
@@ -58,6 +59,10 @@ def test_match(client):
     assert response.json['pnc_number_std_r']['0'] == "2001/0141640Y"
     assert response.json['gamma_pnc_number_std']['0'] == -1
 
+def test_health(client):
+    response = client.get("/health")
+    assert response is not None
+    assert response.status_code == 200
 
 valid_sample = {
     "unique_id": {
