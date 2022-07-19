@@ -47,3 +47,27 @@ workflows:
                 - PIC-2145
           requires:
             - build_docker
+      - request-preprod-approval:
+          type: approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          context:
+            - hmpps-common-vars
+            - court-probation-live-preprod
+          requires:
+            - request-preprod-approval
+      - request-prod-approval:
+          type: approval
+          requires:
+            - deploy_preprod
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          context:
+            - hmpps-common-vars
+            - court-probation-live-prod
+          requires:
+            - request-prod-approval

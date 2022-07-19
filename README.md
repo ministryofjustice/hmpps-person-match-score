@@ -32,13 +32,11 @@ Developed using [PyCharm](https://www.jetbrains.com/pycharm/download/)
 
 ## TODO - PiC
 
-- health check for k8s liveness and readiness probes
 - override flask SECRET_KEY
 - instrument
 - app insights custom events
 - unit tests for web api wrapper
 - helm
-- CI/CD
 
 ### TODO - Panagiotis
 - change from embedded DB to PySpark
