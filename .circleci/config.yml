@@ -33,7 +33,6 @@ workflows:
             branches:
               only:
                 - main
-                - PIC-2145
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -44,7 +43,6 @@ workflows:
             branches:
               only:
                 - main
-                - PIC-2145
           requires:
             - build_docker
       - request-preprod-approval:
