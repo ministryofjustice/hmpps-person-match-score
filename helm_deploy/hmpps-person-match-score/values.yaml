@@ -25,9 +25,12 @@ generic-service:
     targetCPUUtilizationPercentage: 100
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
-  # namespace_secrets:
-  #   [name of kubernetes secret]:
-  #     [name of environment variable as seen by app]: [key of kubernetes secret to load]
+  namespace_secrets:
+   hmpps-person-match-score:
+     APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
+
+  env:
+    APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
 
   allowlist:
     office: "217.33.148.210/32"
