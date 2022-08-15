@@ -29,6 +29,8 @@ RUN python -m venv /venv
 # install Python dependencies in virtual environment
 COPY pyproject.toml poetry.lock ./
 RUN poetry export -f requirements.txt --output requirements.txt
+# Remove unwanted Windows dependencies
+RUN cat ./requirements.txt | sed -e :a -e '/\\$/N; s/\\\n//; ta' | sed 's/^pywin32==.*//' > requirements.txt
 RUN /venv/bin/pip install -r requirements.txt
 
 # build the app in virtual environment
