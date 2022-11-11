@@ -8,6 +8,8 @@ generic-service:
     port: 5000
 
   ingress:
+    v0_47_enabled: false
+    v1_2_enabled: true
     enabled: true
     host: app-hostname.local    # override per environment
     path: /
