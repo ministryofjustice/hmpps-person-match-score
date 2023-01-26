@@ -1,13 +1,13 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@5.1.0
+  hmpps: ministryofjustice/hmpps@7.1.0
   jira: circleci/jira@1.3.1
 
 executors:
   builder:
     docker:
-      - image: cimg/python:3.9.13
+      - image: cimg/python:3.11.1
     working_directory: ~/app
 
 
@@ -22,11 +22,15 @@ workflows:
   build-test-and-deploy:
     jobs:
       - build:
+          context:
+          - hmpps-common-vars
           filters:
             tags:
               ignore: /.*/
       - hmpps/build_docker:
           name: build_docker
+          context:
+            - hmpps-common-vars
           requires:
             - build
           filters:
