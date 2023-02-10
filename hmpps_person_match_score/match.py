@@ -1,12 +1,11 @@
 import json
 import flask
-import pandas
-from textdistance import levenshtein, jaro_winkler
-from .db import get_db
-from . import model
-from . import sql_functions
-from . import standardisation_functions
-from . import ai
+import pandas as pd
+from splink.duckdb.duckdb_linker import DuckDBLinker
+import model
+import sql_functions
+import standardisation_functions
+import ai
 
 blueprint = flask.Blueprint('match', __name__)
 
@@ -53,33 +52,15 @@ def match():
 
 
 def score(data):
-    with get_db() as conn:
-        cursor = conn.cursor()
+    # Set up DuckDB linker
+    linker = DuckDBLinker([pd.DataFrame(data.iloc[0,:]).transpose(), pd.DataFrame(data.iloc[1,:]).transpose()])
+    linker.load_settings_from_json('./model.json')
 
-        # Register SQL functions
-        # TODO register functions once on startup
-        conn.create_function("concat", -1, sql_functions.concat)
-        conn.create_function("jaro_winkler_sim", 2, jaro_winkler)
-        conn.create_function("Dmetaphone", 1, sql_functions.Dmetaphone)
-        conn.create_function("levenshtein", 2, levenshtein)
-        conn.create_function("datediff", 2, sql_functions.datediff)
-
-        # TODO create unique database tables
-        data.to_sql(name='df', con=conn, if_exists='replace', index=False)
-        cursor.execute(f"""CREATE TABLE df_comparison AS {model.df_comparison}""")
-        cursor.execute(f"""CREATE TABLE df_with_gamma AS {model.df_with_gamma}""")
-        cursor.execute(f"""CREATE TABLE df_with_gamma_probs AS {model.df_with_gamma_probs}""")
-        cursor.execute(f"""CREATE TABLE df_e AS {model.df_e}""")
-
-        json_output = pandas.read_sql("""select * from df_e""", con=conn).to_json()
-
-        # TODO clean up database tables reliably
-        cursor.execute("DROP TABLE IF EXISTS df_comparison")
-        cursor.execute("DROP TABLE IF EXISTS df_with_gamma")
-        cursor.execute("DROP TABLE IF EXISTS df_with_gamma_probs")
-        cursor.execute("DROP TABLE IF EXISTS df_e")
-
-        return json.loads(json_output)
+    # Make predictions
+    json_output = linker.predict(1e-300).as_pandas_dataframe().to_json()
+    
+    # Return
+    return json.loads(json_output)
 
 
 class UnsupportedError(Exception):
