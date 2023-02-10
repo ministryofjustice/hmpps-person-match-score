@@ -36,7 +36,7 @@ def health():
 def match():
     try:
         logger.info("Match score requested")
-        data = pandas.read_json(json.dumps(flask.request.get_json()), dtype=str)
+        data = pd.read_json(json.dumps(flask.request.get_json()), dtype=str)
 
         data = standardisation_functions.standardise_pnc_number(data, pnc_col='pnc_number')
         data = standardisation_functions.standardise_dob(data, dob_col='dob')
