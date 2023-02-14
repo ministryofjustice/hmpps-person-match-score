@@ -2,8 +2,6 @@ import json
 import flask
 import pandas as pd
 from splink.duckdb.duckdb_linker import DuckDBLinker
-import model
-import sql_functions
 import standardisation_functions
 import ai
 

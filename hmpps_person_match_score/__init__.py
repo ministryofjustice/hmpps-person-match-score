@@ -4,7 +4,7 @@ import sys
 from logging.config import dictConfig
 
 import flask
-from . import db, match, ai
+from . import match, ai
 
 def create_app(test_config=None):
     ai_logger_instance = ai.instance
@@ -49,8 +49,6 @@ def create_app(test_config=None):
             os.makedirs(app.instance_path)
         except OSError:
             pass
-
-        db.init_app(app)
 
         app.register_blueprint(match.blueprint)
 
