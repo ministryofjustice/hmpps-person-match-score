@@ -19,18 +19,6 @@ def ping():
         logger.exception('Exception at ping endpoint')
         return e.args[0], 500
 
-@blueprint.route('/health', methods=['GET'])
-def health():
-    try:
-        with get_db() as conn:
-            cursor = conn.cursor()
-            cursor.execute('SELECT 1')
-            result = cursor.fetchone()
-            return result is not None and 'UP'
-    except Exception as e:
-        logger.exception('Exception at health endpoint')
-        return 'DOWN', 503
-
 
 @blueprint.route('/match', methods=['POST'])
 def match():
@@ -53,7 +41,7 @@ def match():
 
 def score(data):
     # Set up DuckDB linker
-    linker = DuckDBLinker([pd.DataFrame(data.iloc[0,:]).transpose(), pd.DataFrame(data.iloc[1,:]).transpose()])
+    linker = DuckDBLinker(data)
     linker.load_settings_from_json('./model.json')
 
     # Make predictions

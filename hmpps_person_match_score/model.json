@@ -1,5 +1,5 @@
 {
-    "link_type": "link_only",
+    "link_type": "dedupe_only",
     "comparisons": [
         {
             "output_column_name": "date_of_birth",
