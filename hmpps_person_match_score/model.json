@@ -1,8 +1,8 @@
 {
-    "link_type": "dedupe_only",
+    "link_type": "link_only",
     "comparisons": [
         {
-            "output_column_name": "date_of_birth",
+            "output_column_name": "dob_std",
             "comparison_levels": [
                 {
                     "sql_condition": "dob_std_l IS NULL or dob_std_r IS NULL",

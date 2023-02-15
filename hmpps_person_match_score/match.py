@@ -2,8 +2,8 @@ import json
 import flask
 import pandas as pd
 from splink.duckdb.duckdb_linker import DuckDBLinker
-import standardisation_functions
-import ai
+from . import standardisation_functions
+from . import ai
 
 blueprint = flask.Blueprint('match', __name__)
 
@@ -16,6 +16,10 @@ def ping():
     except Exception as e:
         logger.exception('Exception at ping endpoint')
         return e.args[0], 500
+    
+@blueprint.route('/health', methods=['GET'])
+def health():
+    return 'Healthy: No db check to be completed'
 
 
 @blueprint.route('/match', methods=['POST'])
@@ -39,11 +43,15 @@ def match():
 
 def score(data):
     # Set up DuckDB linker
-    linker = DuckDBLinker(data)
-    linker.load_settings_from_json('./model.json')
-
+    linker = DuckDBLinker(
+        [data[data['source_dataset'] == data['source_dataset'].unique()[0]], 
+         data[data['source_dataset'] == data['source_dataset'].unique()[1]]],
+        input_table_aliases=[data['source_dataset'].unique()[0], data['source_dataset'].unique()[1]]
+    )
+    linker.load_settings_from_json('./hmpps_person_match_score/model.json')        
+    
     # Make predictions
-    json_output = linker.predict(1e-300).as_pandas_dataframe().to_json()
+    json_output = linker.predict().as_pandas_dataframe().to_json()
     
     # Return
     return json.loads(json_output)
