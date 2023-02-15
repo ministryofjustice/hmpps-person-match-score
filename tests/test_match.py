@@ -29,7 +29,6 @@ def runner(app):
 def test_match(client):
     response = client.post("/match", json=valid_sample)
     # Note: no Bayes Factors asserted - match probability should be sufficient
-    print(response.json)
     assert response is not None
     assert response.status_code == 200
     assert response.json['match_probability']['0'] == 0.999353426
