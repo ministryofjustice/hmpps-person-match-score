@@ -66,7 +66,7 @@ def standardise_dob(
     return df
 
 
-def standardise_names(df, name_cols, drop_orig=True, split_hyphens=True):
+def standardise_names(df, name_cols, drop_orig=True:
     """Take a one or more name columns in a list and standardise the names
     so one name appears in each column consistently
     Args:
