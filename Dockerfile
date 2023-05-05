@@ -15,7 +15,7 @@ FROM base as build
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.1.13
+    POETRY_VERSION=1.4.2
 
 # build-time OS dependencies
 RUN apk add --no-cache gcc musl-dev libffi-dev g++
