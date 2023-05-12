@@ -6,18 +6,17 @@ from .db import get_db
 from . import model
 from . import sql_functions
 from . import standardisation_functions
-from . import ai
+from hmpps_person_match_score.app_insights import logger, event_logger
 
 blueprint = flask.Blueprint('match', __name__)
 
-logger = ai.instance.get_logger(__name__)
 
 @blueprint.route('/ping', methods=['GET'])
 def ping():
     try:
         return "pong"
     except Exception as e:
-        logger.exception('Exception at ping endpoint')
+        logger(__name__).exception('Exception at ping endpoint')
         return e.args[0], 500
 
 @blueprint.route('/health', methods=['GET'])
@@ -36,7 +35,6 @@ def health():
 @blueprint.route('/match', methods=['POST'])
 def match():
     try:
-        logger.info("Match score requested")
         data = pandas.read_json(json.dumps(flask.request.get_json()), dtype=str)
 
         data = standardisation_functions.standardise_pnc_number(data, pnc_col='pnc_number')
@@ -45,11 +43,26 @@ def match():
         data = standardisation_functions.fix_zero_length_strings(data)
 
         response = score(data)
-        logger.info("Match score completed")
+        event_logger(__name__).info(f"PiCPersonMatchScoreGenerated", extra={
+            'custom_dimensions': custom_dimensions_from(response)
+        })
         return response
     except Exception as e:
-        logger.exception('Exception at match endpoint')
+        logger(__name__).exception('Exception at match endpoint')
         return e.args[0], 500
+
+
+def custom_dimensions_from(response: dict):
+    return {key: value['0'] for key, value in response.items() if
+            key in [
+                'unique_id_l',
+                'unique_id_3',
+                'pnc_number_std_l',
+                'pnc_number_std_r',
+                'source_dataset_l',
+                'source_dataset_r',
+                'match_probability'
+            ]}
 
 
 def score(data):
