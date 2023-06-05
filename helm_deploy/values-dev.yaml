@@ -13,7 +13,7 @@ generic-service:
 
   resources:
     limits:
-      cpu: 5000m
+      cpu: 1000m
       memory: 1200Mi
     requests:
       cpu: 250m
