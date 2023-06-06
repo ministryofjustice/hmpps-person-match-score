@@ -26,7 +26,6 @@ def match():
     try:
         logger(__name__).info("Match score requested")
         
-        # This no longer works with the test data (I think as of Python 3.x), try this instead:
         data = pd.DataFrame(json.loads(flask.request.get_data().decode('utf-8')))
        
         data = standardisation_functions.standardise_pnc_number(data, pnc_col='pnc_number')
