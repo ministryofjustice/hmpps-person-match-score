@@ -4,8 +4,9 @@ import sys
 import logging
 
 import flask
-from . import db, match
+from . import match
 from hmpps_person_match_score.app_insights import app_insights_logger, logger
+
 
 def create_app(test_config=None):
     try:
@@ -34,8 +35,6 @@ def create_app(test_config=None):
             os.makedirs(app.instance_path)
         except OSError:
             pass
-
-        db.init_app(app)
 
         app.register_blueprint(match.blueprint)
 

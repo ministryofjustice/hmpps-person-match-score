@@ -48,9 +48,9 @@ def standardise_dob(
     Returns:
         DataFrame: Pandas DataFrame with new standardised dob column called dob_std
     """
-
+    
     dtypes = dict(df.dtypes)
-
+    
     if dtypes[dob_col] not in ('O', 'datetime64[ns]'):
         raise TypeError('DoB column type needs to be string or datetime')
     else:
@@ -80,7 +80,7 @@ def standardise_names(df, name_cols, drop_orig=True):
     surname_col_name = name_cols[-1]
 
     df['name_concat'] = df[name_cols].apply(lambda row: ' '.join(row.values.astype(str)), axis=1).str.lower()
-    df['name_concat'] = df['name_concat'].str.replace('-', ' ').replace('.', ' ')
+    df['name_concat'] = df['name_concat'].str.replace('-', ' ').str.replace('.', ' ')
     df['name_arr'] = df['name_concat'].str.split(' ')
     df['surname_std'] = df['name_arr'].apply(lambda x: x[-1] if df[surname_col_name] is not None else None).replace(
         'nan', np.nan)
@@ -113,6 +113,21 @@ def fix_zero_length_strings(df):
         DataFrame: Pandas Dataframe with clean strings
     """
     string_cols = df.select_dtypes(include='object').columns.tolist()
-    df[string_cols] = df[string_cols].applymap(lambda x: None if (x is None or x == np.nan or len(x) == 0) else x)
-
+    df[string_cols] = df[string_cols].applymap(lambda x: None if (x is None or x == np.nan or len(x) == 0 or set(x) == set(" ")) else x.strip())
+    return df
+    
+def null_suspicious_dob_std(df, dob_col="dob_std"):
+    """Null out suspicious dates of birth
+    Args:
+        df (DataFrame): Input Spark DataFrame.  Expects that dob column has already been standardised
+        dob_col (str, optional): Name of standardised dob col. Defaults to "dob_std".
+    Returns:
+        DataFrame: Original dataframe with suspicious dates of birth nulled out 
+    """    
+    df[dob_col] = df[dob_col].apply(lambda x: x if x not in ['1900-01-01', '1970-01-01'] else None)
+        
+    df['dob_std'] = df[dob_col]
+    if dob_col != "dob_std":
+        df = df.drop(dob_col, axis=1)
+        
     return df
