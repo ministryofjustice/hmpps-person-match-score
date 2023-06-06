@@ -4,7 +4,7 @@ import sys
 import logging
 
 import flask
-from . import match, ai
+from . import match
 from hmpps_person_match_score.app_insights import app_insights_logger, logger
 
 

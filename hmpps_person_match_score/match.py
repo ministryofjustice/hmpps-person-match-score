@@ -24,7 +24,7 @@ def health():
 @blueprint.route('/match', methods=['POST'])
 def match():
     try:
-        logger.info("Match score requested")
+        logger(__name__).info("Match score requested")
         
         # data = pd.read_json(json.dumps(flask.request.get_json()), dtype=str)
         # This no longer works with the test data (I think as of Python 3.x), try this instead:
