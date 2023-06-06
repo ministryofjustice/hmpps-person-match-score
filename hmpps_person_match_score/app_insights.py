@@ -1,17 +1,26 @@
 import logging
 import os
 
-from opencensus.ext.azure.log_exporter import AzureLogHandler
+from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
 
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
 
-
 def role_name_processor(envelope):
     envelope.tags['ai.cloud.role'] = 'hmpps-person-match-score'
 
-class AILogger:
+def logger(name):
+    return app_insights_logger().get_logger(name)
+
+def event_logger(name):
+    return app_insights_logger().get_event_logger(name)
+
+def app_insights_logger():
+    return AppInsightsLogger.instance()
+
+
+class AppInsightsLogger:
     _use_ai = True
     _instance = None
 
@@ -32,9 +41,18 @@ class AILogger:
         return cls._instance
 
     def get_logger(self, name):
-        logger = logging.getLogger(__name__)
+        logger = logging.getLogger(name)
         if self._use_ai:
             handler = AzureLogHandler()
+            handler.add_telemetry_processor(role_name_processor)
+            logger.addHandler(handler)
+        return logger
+
+    def get_event_logger(self, name="CustomEventLogger"):
+        logger = logging.getLogger(name)
+        logger.setLevel(logging.INFO)
+        if self._use_ai:
+            handler = AzureEventHandler()
             handler.add_telemetry_processor(role_name_processor)
             logger.addHandler(handler)
         return logger
@@ -48,5 +66,3 @@ class AILogger:
                 exporter=exporter,
                 sampler=ProbabilitySampler(rate=1.0)
             )
-
-instance = AILogger.instance()
