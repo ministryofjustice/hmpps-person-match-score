@@ -2,7 +2,6 @@ import datetime
 
 import pandas as pd
 from hmpps_person_match_score.standardisation_functions import standardise_dob, null_suspicious_dob_std
-# , null_suspicious_dob_std
 
 def test_dob_1():
     dt = datetime.datetime(2020, 5, 25, 8, 5, 44, 815715)
