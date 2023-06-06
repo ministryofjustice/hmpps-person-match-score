@@ -18,7 +18,7 @@ def ping():
     
 @blueprint.route('/health', methods=['GET'])
 def health():
-    return 'Healthy: No db check to be completed'
+    return 'UP'
 
 
 @blueprint.route('/match', methods=['POST'])
