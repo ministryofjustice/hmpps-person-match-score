@@ -47,7 +47,7 @@ def custom_dimensions_from(response: dict):
     return {key: value['0'] for key, value in response.items() if
             key in [
                 'unique_id_l',
-                'unique_id_3',
+                'unique_id_r',
                 'pnc_number_std_l',
                 'pnc_number_std_r',
                 'source_dataset_l',
