@@ -4,8 +4,11 @@ import pandas as pd
 from splink.duckdb.duckdb_linker import DuckDBLinker
 from . import standardisation_functions
 from hmpps_person_match_score.app_insights import logger, event_logger
-
+import os
 blueprint = flask.Blueprint('match', __name__)
+model_path = os.environ.get('MODEL_PATH', './hmpps_person_match_score/model.json')
+if not os.path.exists(model_path):
+    raise Exception(f"MODEL_PATH {model_path} does not exist.")
 
 
 @blueprint.route('/ping', methods=['GET'])
@@ -63,7 +66,7 @@ def score(data):
          data[data['source_dataset'] == data['source_dataset'].unique()[1]]],
         input_table_aliases=[data['source_dataset'].unique()[0], data['source_dataset'].unique()[1]]
     )
-    linker.load_settings_from_json('./hmpps_person_match_score/model.json')        
+    linker.load_settings_from_json(model_path)
     
     # Make predictions
     json_output = linker.predict().as_pandas_dataframe().to_json()
