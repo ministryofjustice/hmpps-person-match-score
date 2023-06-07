@@ -43,6 +43,8 @@ RUN /venv/bin/pip install dist/*.whl
 ##############
 FROM base as final
 
+ENV MODEL_PATH='/venv/lib/python3.9/site-packages/hmpps_person_match_score/model.json'
+
 # runtime OS dependencies
 RUN apk add --no-cache libstdc++
 
