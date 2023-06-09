@@ -35,7 +35,13 @@ def match():
         data = standardisation_functions.standardise_dob(data, dob_col='dob')
         data = standardisation_functions.standardise_names(data, name_cols=['first_name', 'surname'])
         data = standardisation_functions.fix_zero_length_strings(data)
-
+        
+        # If no source dataset provided assume it's in the same format we expect, our algorithm does not need to know which record is which 
+        # so this is just a formality
+        if len(data['source_dataset']) == 0:
+            data['source_dataset'] = pd.Series({'0': 'libra', '1':'delius'})
+            data['source_dataset'] = data['source_dataset'].astype('str')
+            
         response = score(data)
         event_logger(__name__).info(f"PiCPersonMatchScoreGenerated", extra={
             'custom_dimensions': custom_dimensions_from(response)
@@ -60,6 +66,7 @@ def custom_dimensions_from(response: dict):
 
 
 def score(data):
+    
     # Set up DuckDB linker
     linker = DuckDBLinker(
         [data[data['source_dataset'] == data['source_dataset'].unique()[0]], 
