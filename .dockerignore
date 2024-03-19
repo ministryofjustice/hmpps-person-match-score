@@ -1,0 +1,31 @@
+# Version control directories
+.git/
+.gitignore
+
+# Virtual environment
+.venv/
+
+# Python cache files/directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+.cache
+.pytest_cache/
+
+# Project-specific ignores
+.db
+.env
+.env.local
+.DS_Store
+*.log
+
+# IDE/Editor directories
+.idea/
+.vscode/
+*.swp
+*~

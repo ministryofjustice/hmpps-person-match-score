@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.9.12-alpine3.15 as base
+FROM python:3.9.12-slim-buster as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -18,7 +18,12 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.4.2
 
 # build-time OS dependencies
-RUN apk add --no-cache gcc musl-dev libffi-dev g++
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libc-dev \
+    libffi-dev \
+    g++
+
 
 # install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
@@ -46,18 +51,19 @@ FROM base as final
 ENV MODEL_PATH='/venv/lib/python3.9/site-packages/hmpps_person_match_score/model.json'
 
 # runtime OS dependencies
-RUN apk add --no-cache libstdc++
+RUN apt-get install -y libstdc++ \
+    && rm -rf /var/lib/apt/lists/*
 
 # copy the built virtual environment and entry point
 COPY --from=build /venv /venv
 RUN mkdir /venv/var
+
 COPY docker-entrypoint.sh wsgi.py ./
 
 # create app user
-RUN addgroup -g 1001 -S appuser && adduser -u 1001 -S appuser -G appuser
-RUN chown -R appuser:appuser /venv/var/
-RUN chown -R appuser:appuser .
-USER 1001
+RUN groupadd -g 1001 appuser && \
+    useradd -u 1001 -g appuser -m -s /bin/bash appuser
+
 
 EXPOSE 5000
 
