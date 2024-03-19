@@ -1,6 +1,7 @@
 import json
 import flask
 import pandas as pd
+import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 from . import standardisation_functions
 from hmpps_person_match_score.app_insights import logger, event_logger
@@ -10,6 +11,20 @@ model_path = os.environ.get('MODEL_PATH', './hmpps_person_match_score/model.json
 if not os.path.exists(model_path):
     raise Exception(f"MODEL_PATH {model_path} does not exist.")
 
+cleaned_data_schema = pa.schema(
+    [
+        pa.field("source_dataset", pa.string(), nullable=True),
+        pa.field("unique_id", pa.string(), nullable=True),
+        pa.field("pnc_number_std", pa.string(), nullable=True),
+        pa.field("dob_std", pa.string(), nullable=True),
+        pa.field("surname_std", pa.string(), nullable=True),
+        pa.field("forename1_std", pa.string(), nullable=True),
+        pa.field("forename2_std", pa.string(), nullable=True),
+        pa.field("forename3_std", pa.string(), nullable=True),
+        pa.field("forename4_std", pa.string(), nullable=True),
+        pa.field("forename5_std", pa.string(), nullable=True),
+    ]
+)
 
 @blueprint.route('/ping', methods=['GET'])
 def ping():
@@ -66,11 +81,20 @@ def custom_dimensions_from(response: dict):
 
 
 def score(data):
+
+    row_1 = data[data["source_dataset"] == data["source_dataset"].unique()[0]]
+    row_2 = data[data["source_dataset"] == data["source_dataset"].unique()[1]]
+
+    row_arrow_1 = pa.Table.from_pandas(
+        row_1, schema=cleaned_data_schema, preserve_index=False
+    )
+    row_arrow_2 = pa.Table.from_pandas(
+        row_2, schema=cleaned_data_schema, preserve_index=False
+    )
     
     # Set up DuckDB linker
     linker = DuckDBLinker(
-        [data[data['source_dataset'] == data['source_dataset'].unique()[0]], 
-         data[data['source_dataset'] == data['source_dataset'].unique()[1]]],
+        [row_arrow_1, row_arrow_2],
         input_table_aliases=[data['source_dataset'].unique()[0], data['source_dataset'].unique()[1]]
     )
     linker.load_settings_from_json(model_path)
