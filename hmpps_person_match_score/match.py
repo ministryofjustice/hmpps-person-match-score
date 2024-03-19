@@ -85,6 +85,8 @@ def score(data):
     row_1 = data[data["source_dataset"] == data["source_dataset"].unique()[0]]
     row_2 = data[data["source_dataset"] == data["source_dataset"].unique()[1]]
 
+    # Important to impose explicit schema - otherwise where a column contains only
+    # None DuckDB will have no way of knowing it's a nullable string column
     row_arrow_1 = pa.Table.from_pandas(
         row_1, schema=cleaned_data_schema, preserve_index=False
     )
