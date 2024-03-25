@@ -42,7 +42,6 @@ workflows:
           env: "dev"
           context:
             - hmpps-common-vars
-            - court-probation-live-dev
           filters:
             branches:
               only:
@@ -58,7 +57,7 @@ workflows:
           env: "preprod"
           context:
             - hmpps-common-vars
-            - court-probation-live-preprod
+            - hmpps-person-record-preprod
           requires:
             - request-preprod-approval
       - request-prod-approval:
@@ -70,6 +69,6 @@ workflows:
           env: "prod"
           context:
             - hmpps-common-vars
-            - court-probation-live-prod
+            - hmpps-person-record-prod
           requires:
             - request-prod-approval
