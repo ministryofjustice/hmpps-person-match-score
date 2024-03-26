@@ -61,6 +61,7 @@ COPY docker-entrypoint.sh wsgi.py ./
 # create app user
 RUN groupadd -g 1001 appuser && \
     useradd -u 1001 -g appuser -m -s /bin/bash appuser
+USER 1001
 
 EXPOSE 5000
 
