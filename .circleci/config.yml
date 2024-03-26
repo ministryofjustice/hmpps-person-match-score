@@ -28,14 +28,14 @@ workflows:
               ignore: /.*/
       - hmpps/build_docker:
           name: build_docker
+          publish: false
           context:
             - hmpps-common-vars
           requires:
             - build
           filters:
-            branches:
-              only:
-                - main
+            tags:
+              ignore: /.*/
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
