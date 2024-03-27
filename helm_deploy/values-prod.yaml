@@ -2,7 +2,7 @@
 generic-service:
   ingress:
     host: hmpps-person-match-score.hmpps.service.justice.gov.uk
-    tlsSecretName: court-probation-cert-secret
+    tlsSecretName: hmpps-person-record-cert-secret
 
   autoscaling:
     minReplicas: 2
