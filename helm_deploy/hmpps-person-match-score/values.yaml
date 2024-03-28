@@ -2,6 +2,8 @@
 generic-service:
   nameOverride: hmpps-person-match-score
 
+  replicaCount: 2
+
   image:
     repository: quay.io/hmpps/hmpps-person-match-score
     tag: latest    # override at deployment time
