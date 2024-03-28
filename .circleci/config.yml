@@ -15,8 +15,8 @@ jobs:
     executor: builder
     steps:
       - checkout
-      - run: poetry install
-      - run: poetry run pytest
+      - run: make install
+      - run: make test
 workflows:
   build-test-and-deploy:
     jobs:

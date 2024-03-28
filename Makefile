@@ -1,4 +1,7 @@
 
+install:
+	poetry install
+
 lint:
 	poetry run ruff check hmpps_person_match_score/
 
@@ -12,3 +15,6 @@ run:
 
 build:
 	docker build . -t hmpps_person_match_score
+
+test:
+	poetry run pytest
