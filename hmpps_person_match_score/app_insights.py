@@ -1,20 +1,22 @@
 import logging
-import os
 
-from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
-
+from opencensus.ext.azure.log_exporter import AzureEventHandler, AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
 
+
 def role_name_processor(envelope):
-    envelope.tags['ai.cloud.role'] = 'hmpps-person-match-score'
+    envelope.tags["ai.cloud.role"] = "hmpps-person-match-score"
+
 
 def logger(name):
     return app_insights_logger().get_logger(name)
 
+
 def event_logger(name):
     return app_insights_logger().get_event_logger(name)
+
 
 def app_insights_logger():
     return AppInsightsLogger.instance()
@@ -25,7 +27,7 @@ class AppInsightsLogger:
     _instance = None
 
     def __init__(self):
-        raise RuntimeError('Call instance() instead')
+        raise RuntimeError("Call instance() instead")
 
     @classmethod
     def instance(cls):
@@ -34,7 +36,7 @@ class AppInsightsLogger:
             try:
                 logger = cls._instance.get_logger(__name__)
             except ValueError as e:
-                assert e.args[0] == 'Instrumentation key cannot be none or empty.'
+                assert e.args[0] == "Instrumentation key cannot be none or empty."
                 cls._use_ai = False
                 logger = cls._instance.get_logger(__name__)
                 logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
@@ -61,8 +63,5 @@ class AppInsightsLogger:
         if self._use_ai:
             exporter = AzureExporter()
             exporter.add_telemetry_processor(role_name_processor)
-            middleware = FlaskMiddleware(
-                app,
-                exporter=exporter,
-                sampler=ProbabilitySampler(rate=1.0)
-            )
+            # TODO: Actually Add middleware
+            return FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))

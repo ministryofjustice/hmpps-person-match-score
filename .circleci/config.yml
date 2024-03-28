@@ -3,20 +3,26 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@8
 
-executors:
-  builder:
-    docker:
-      - image: cimg/python:3.11.1
-    working_directory: ~/app
-
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-person-record-alerts
+  releases-slack-channel:
+    type: string
+    default: hmpps-person-record-alerts
 
 jobs:
   build:
-    executor: builder
+    executor:
+      name: hmpps/default
+      tag: 3.9.12
     steps:
       - checkout
-      - run: poetry install
-      - run: poetry run pytest
+      - run: poetry self update 1.8.2
+      - run: make install
+      - run: make lint
+      - run: make test
+
 workflows:
   build-test-and-deploy:
     jobs:
@@ -39,6 +45,11 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          jira_update: true
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
             - hmpps-common-vars
           filters:

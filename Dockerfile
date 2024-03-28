@@ -15,7 +15,7 @@ FROM base as build
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.4.2
+    POETRY_VERSION=1.8.2
 
 # build-time OS dependencies
 RUN apt-get update && apt-get install -y \
