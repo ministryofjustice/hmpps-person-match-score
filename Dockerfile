@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.9.12-slim-buster as base
+FROM python:3.9.18-slim-bullseye as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -29,36 +29,29 @@ RUN apt-get update && \
 # install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
 
-# create virtual environment
-RUN python -m venv /venv
-
 # install Python dependencies in virtual environment
-COPY pyproject.toml poetry.lock ./
-RUN poetry export -f requirements.txt --output requirements.txt
-# Remove unwanted Windows dependencies
-RUN cat ./requirements.txt | sed -e :a -e '/\\$/N; s/\\\n//; ta' | sed 's/^pywin32==.*//' > requirements.txt
-RUN /venv/bin/pip install -r requirements.txt
+COPY . .
+RUN poetry install
 
 # build the app in virtual environment
-COPY . .
 RUN poetry build
-RUN /venv/bin/pip install dist/*.whl
+RUN .venv/bin/pip install dist/*.whl
+RUN mv .venv /venv
 
 ##############
 # FINAL stage
 ##############
 FROM base as final
 
-ENV MODEL_PATH='/venv/lib/python3.9/site-packages/hmpps_person_match_score/model.json'
-
 # runtime OS dependencies
 RUN apt-get install -y libstdc++ \
     && rm -rf /var/lib/apt/lists/*
 
 # copy the built virtual environment and entry point
-COPY --from=build /venv /venv
-RUN mkdir /venv/var
+COPY --from=build /venv /app/.venv
 COPY docker-entrypoint.sh wsgi.py ./
+
+ENV MODEL_PATH='/app/.venv/lib/python3.9/site-packages/hmpps_person_match_score/model.json'
 
 # create app user
 RUN groupadd -g 1001 appuser && \
