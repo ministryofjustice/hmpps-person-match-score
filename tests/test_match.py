@@ -1,4 +1,5 @@
 import pytest
+
 from hmpps_person_match_score import create_app
 
 
