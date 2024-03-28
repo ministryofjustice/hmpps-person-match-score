@@ -3,11 +3,6 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@8
 
-executor:
-  builder:
-    name: hmpps/default
-    tag: 3.9.12
-
 parameters:
   alerts-slack-channel:
     type: string
@@ -18,7 +13,9 @@ parameters:
 
 jobs:
   build:
-    executor: builder
+    executor:
+      name: hmpps/default
+      tag: 3.9.12
     steps:
       - checkout
       - run: make install
