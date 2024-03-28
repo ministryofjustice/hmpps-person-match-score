@@ -39,9 +39,7 @@ class AppInsightsLogger:
                 assert e.args[0] == "Instrumentation key cannot be none or empty."
                 cls._use_ai = False
                 logger = cls._instance.get_logger(__name__)
-                logger.warning(
-                    "Logs will not post to AppInsights as no instrumentation key has been provided"
-                )
+                logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
         return cls._instance
 
     def get_logger(self, name):
@@ -65,6 +63,5 @@ class AppInsightsLogger:
         if self._use_ai:
             exporter = AzureExporter()
             exporter.add_telemetry_processor(role_name_processor)
-            middleware = FlaskMiddleware(
-                app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0)
-            )
+            # TODO: Actually Add middleware
+            return FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))

@@ -21,23 +21,19 @@ def standardise_pnc_number(df, pnc_col="pnc_number", drop_orig=True):
     """
     data = df.copy(deep=True)
 
-    # Special case where dob is passed as "pnc": {} so is filled with np.nan i.e. float, here we fill with None and cast to string
+    # Special case where dob is passed as "pnc": {} so is filled with np.nan i.e. float, 
+    # here we fill with None and cast to string
     if data[pnc_col].dtype == "float64":
         data = data.replace({np.nan: None})
         data["pnc_number_std"] = df[pnc_col].astype("str")
     else:
         data["pnc_number_std"] = data[pnc_col].str.replace(" ", "").str.upper()
-        data["pnc_number_std"] = data["pnc_number_std"].apply(
-            lambda x: x if len(str(x)) == 13 else None
-        )
+        data["pnc_number_std"] = data["pnc_number_std"].apply(lambda x: x if len(str(x)) == 13 else None)
 
-        data["pnc_number_std"] = data["pnc_number_std"].apply(
-            lambda x: x if x not in bad_pnc_list else None
-        )
+        data["pnc_number_std"] = data["pnc_number_std"].apply(lambda x: x if x not in bad_pnc_list else None)
 
-    if drop_orig:
-        if pnc_col != "pnc_number_std":
-            data = data.drop(pnc_col, axis=1)
+    if drop_orig and pnc_col != "pnc_number_std":
+        data = data.drop(pnc_col, axis=1)
 
     data = data.replace({"nan": None})
 
@@ -70,18 +66,16 @@ def standardise_dob(
             df["dob_std"] = df[dob_col].dt.strftime("%Y-%m-%d")
 
         if dtypes[dob_col] == "O":
-            df["dob_std"] = pd.to_datetime(df[dob_col], yearfirst=True).dt.strftime(
-                "%Y-%m-%d"
-            )
+            df["dob_std"] = pd.to_datetime(df[dob_col], yearfirst=True).dt.strftime("%Y-%m-%d")
 
-        # Special case where dob is passed as "dob": {} so is filled with np.nan i.e. float, here we fill with None and cast to datetime
+        # Special case where dob is passed as "dob": {} so is filled with np.nan
+        # i.e. float, here we fill with None and cast to datetime
         if dtypes[dob_col] == "float64":
             df = df.replace({np.nan: None})
             df["dob_std"] = df[dob_col].astype("datetime64[ns]")
 
-        if drop_orig:
-            if dob_col != "dob_std":
-                df = df.drop(dob_col, axis=1)
+        if drop_orig and dob_col != "dob_std":
+            df = df.drop(dob_col, axis=1)
     return df
 
 
@@ -109,49 +103,26 @@ def standardise_names(df, name_cols, drop_orig=True):
     else:
         surname_col_name = name_cols[-1]
 
-        df["name_concat"] = (
-            df[name_cols]
-            .apply(lambda row: " ".join(row.values.astype(str)), axis=1)
-            .str.lower()
-        )
-        df["name_concat"] = (
-            df["name_concat"].str.replace("-", " ").str.replace(".", " ")
-        )
+        df["name_concat"] = df[name_cols].apply(lambda row: " ".join(row.values.astype(str)), axis=1).str.lower()
+        df["name_concat"] = df["name_concat"].str.replace("-", " ").str.replace(".", " ")
         df["name_arr"] = df["name_concat"].str.split(" ")
         df["surname_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[-1] if df[surname_col_name] is not None else None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[-1] if df[surname_col_name] is not None else None).replace("nan", np.nan)
         )
         df["forename1_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[0] if len(x) > 1 else None)
-            .replace("nan", None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[0] if len(x) > 1 else None).replace("nan", None).replace("nan", np.nan)
         )
         df["forename2_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[1] if len(x) > 2 else None)
-            .replace("nan", None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[1] if len(x) > 2 else None).replace("nan", None).replace("nan", np.nan)
         )
         df["forename3_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[2] if len(x) > 3 else None)
-            .replace("nan", None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[2] if len(x) > 3 else None).replace("nan", None).replace("nan", np.nan)
         )
         df["forename4_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[3] if len(x) > 4 else None)
-            .replace("nan", None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[3] if len(x) > 4 else None).replace("nan", None).replace("nan", np.nan)
         )
         df["forename5_std"] = (
-            df["name_arr"]
-            .apply(lambda x: x[4] if len(x) > 5 else None)
-            .replace("nan", None)
-            .replace("nan", np.nan)
+            df["name_arr"].apply(lambda x: x[4] if len(x) > 5 else None).replace("nan", None).replace("nan", np.nan)
         )
         df.drop(["name_concat", "name_arr"], axis=1, inplace=True)
 
@@ -174,9 +145,7 @@ def fix_zero_length_strings(df):
     """
     string_cols = df.select_dtypes(include="object").columns.tolist()
     df[string_cols] = df[string_cols].applymap(
-        lambda x: None
-        if (x is None or x == np.nan or len(x) == 0 or set(x) == set(" "))
-        else x.strip()
+        lambda x: None if (x is None or x == np.nan or len(x) == 0 or set(x) == set(" ")) else x.strip()
     )
     return df
 
@@ -189,9 +158,7 @@ def null_suspicious_dob_std(df, dob_col="dob_std"):
     Returns:
         DataFrame: Original dataframe with suspicious dates of birth nulled out
     """
-    df[dob_col] = df[dob_col].apply(
-        lambda x: x if x not in ["1900-01-01", "1970-01-01"] else None
-    )
+    df[dob_col] = df[dob_col].apply(lambda x: x if x not in ["1900-01-01", "1970-01-01"] else None)
 
     df["dob_std"] = df[dob_col]
     if dob_col != "dob_std":

@@ -1,3 +1,4 @@
+import contextlib
 import logging
 import os
 import platform
@@ -18,10 +19,8 @@ def create_app(test_config=None):
         app = flask.Flask(__name__, instance_relative_config=True)
         app_insights_logger().initRequestMiddleware(app)
 
-        logger(__name__).info(
-            "Starting hmpps-person-match-score using Python %s on %s"
-            % (" ".join(sys.version.split(" ")[:1]), platform.platform())
-        )
+        version = " ".join(sys.version.split(" ")[:1])
+        logger(__name__).info(f"Starting hmpps-person-match-score using Python {version} on" f" {platform.platform()}")
 
         app.config.from_mapping(
             SECRET_KEY="dev",
@@ -36,10 +35,8 @@ def create_app(test_config=None):
             app.config.from_mapping(test_config)
 
         # ensure the instance folder exists
-        try:
+        with contextlib.suppress(OSError):
             os.makedirs(app.instance_path)
-        except OSError:
-            pass
 
         app.register_blueprint(match.blueprint)
 

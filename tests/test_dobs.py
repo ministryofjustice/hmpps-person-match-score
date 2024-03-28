@@ -39,39 +39,25 @@ def test_dob_1():
     df_expected = pd.DataFrame(expected)
 
     df_result = standardise_dob(df[["A"]], "A")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[0], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[0], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["B"]], "B")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[1], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[1], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["C"]], "C")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[2], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[2], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["D"]], "D")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[3], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[3], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["E"]], "E")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[4], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[4], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["F"]], "F")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[5], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[5], :].reset_index(drop=True))
 
     df_result = standardise_dob(df[["G"]], "G")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[6], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[6], :].reset_index(drop=True))
 
 
 # Unsure this is the best way of handling.  Should we be nulling instead of raising an error.  What about people who were actually born 1970-01-01?
@@ -91,16 +77,10 @@ def test_null_suspicious_dob_std():
     df_expected = pd.DataFrame(expected)
 
     df_result = null_suspicious_dob_std(df[["A"]], "A")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[0], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[0], :].reset_index(drop=True))
 
     df_result = null_suspicious_dob_std(df[["B"]], "B")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[1], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[1], :].reset_index(drop=True))
 
     df_result = null_suspicious_dob_std(df[["C"]], "C")
-    pd.testing.assert_frame_equal(
-        df_result, df_expected.iloc[[2], :].reset_index(drop=True)
-    )
+    pd.testing.assert_frame_equal(df_result, df_expected.iloc[[2], :].reset_index(drop=True))
