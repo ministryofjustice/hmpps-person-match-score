@@ -18,11 +18,13 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     POETRY_VERSION=1.8.2
 
 # build-time OS dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libc-dev \
-    libffi-dev \
-    g++
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get install -y \
+        gcc \
+        libc-dev \
+        libffi-dev \
+        g++
 
 # install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
