@@ -90,6 +90,13 @@ def score(data):
     )
     linker.load_settings_from_json(model_path)
 
+    tf_table_names = [
+        {"forename1_std": "robin", "tf_first_name": 0.0002},
+        {"forename1_std": "john", "tf_first_name": 0.01},
+        {"forename1_std": "lily", "tf_first_name": 0.0033},
+    ]
+    linker.register_term_frequency_table(tf_table_names)
+
     # Make predictions
     json_output = linker.predict().as_pandas_dataframe().to_json()
 

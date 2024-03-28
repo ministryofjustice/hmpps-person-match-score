@@ -60,7 +60,8 @@
                     "sql_condition": "forename1_std_l = forename1_std_r",
                     "label_for_charts": "Exact match",
                     "m_probability": 0.9311633543815533,
-                    "u_probability": 0.004366147260641869
+                    "u_probability": 0.004366147260641869,
+                    "tf_adjustment_column": "forename1_std"
                 },
                 {
                     "sql_condition": "levenshtein(forename1_std_l, forename1_std_r) <= 2",
