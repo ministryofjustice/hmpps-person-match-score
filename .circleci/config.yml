@@ -16,6 +16,7 @@ jobs:
     steps:
       - checkout
       - run: make install
+      - run: make lint
       - run: make test
 workflows:
   build-test-and-deploy:
