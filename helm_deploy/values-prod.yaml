@@ -1,17 +1,8 @@
 ---
 generic-service:
+  replicaCount: 8
+
   ingress:
     host: hmpps-person-match-score.hmpps.service.justice.gov.uk
     tlsSecretName: hmpps-person-record-cert-secret
 
-  autoscaling:
-    minReplicas: 2
-    maxReplicas: 8
-
-  resources:
-    limits:
-      cpu: 1000m
-      memory: 1200Mi
-    requests:
-      cpu: 250m
-      memory: 350Mi
