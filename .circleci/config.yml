@@ -3,12 +3,10 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@8
 
-executors:
+executor:
   builder:
-    docker:
-      - image: cimg/python:3.11.1
-    working_directory: ~/app
-
+    name: hmpps/default
+    tag: 3.9.12
 
 jobs:
   build:
@@ -41,6 +39,11 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          jira_update: true
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
           context:
             - hmpps-common-vars
           filters:
