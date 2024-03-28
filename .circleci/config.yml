@@ -8,6 +8,14 @@ executor:
     name: hmpps/default
     tag: 3.9.12
 
+parameters:
+  alerts-slack-channel:
+    type: string
+    default: hmpps-person-record-alerts
+  releases-slack-channel:
+    type: string
+    default: hmpps-person-record-alerts
+
 jobs:
   build:
     executor: builder
