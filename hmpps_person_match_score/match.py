@@ -1,10 +1,14 @@
 import json
+import os
+
 import flask
 import pandas as pd
 from splink.duckdb.duckdb_linker import DuckDBLinker
+
+from hmpps_person_match_score.app_insights import event_logger, logger
+
 from . import standardisation_functions
-from hmpps_person_match_score.app_insights import logger, event_logger
-import os
+
 blueprint = flask.Blueprint('match', __name__)
 model_path = os.environ.get('MODEL_PATH', './hmpps_person_match_score/model.json')
 if not os.path.exists(model_path):
@@ -43,7 +47,7 @@ def match():
             data['source_dataset'] = data['source_dataset'].astype('str')
             
         response = score(data)
-        event_logger(__name__).info(f"PiCPersonMatchScoreGenerated", extra={
+        event_logger(__name__).info("PiCPersonMatchScoreGenerated", extra={
             'custom_dimensions': custom_dimensions_from(response)
         })
         return response

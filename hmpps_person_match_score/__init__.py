@@ -1,11 +1,13 @@
+import logging
 import os
 import platform
 import sys
-import logging
 
 import flask
-from . import match
+
 from hmpps_person_match_score.app_insights import app_insights_logger, logger
+
+from . import match
 
 
 def create_app(test_config=None):
@@ -39,7 +41,7 @@ def create_app(test_config=None):
         app.register_blueprint(match.blueprint)
 
         return app
-    except Exception as e:
+    except Exception:
         app_insights_logger().get_logger(__name__).exception('Exception on start up')
 
 

@@ -1,11 +1,10 @@
 import logging
-import os
 
-from opencensus.ext.azure.log_exporter import AzureLogHandler, AzureEventHandler
-
+from opencensus.ext.azure.log_exporter import AzureEventHandler, AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
 from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
+
 
 def role_name_processor(envelope):
     envelope.tags['ai.cloud.role'] = 'hmpps-person-match-score'
