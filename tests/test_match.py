@@ -1,11 +1,11 @@
 import pytest
 
-from hmpps_person_match_score import create_app
+from hmpps_person_match_score.app import MatchScoreFlaskApplication
 
 
 @pytest.fixture()
 def app():
-    app = create_app()
+    app = MatchScoreFlaskApplication().app
     app.config.update(
         {
             "TESTING": True,
