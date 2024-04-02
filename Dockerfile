@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9.18-slim-bullseye as base
 
+# Update pip
+RUN pip install --upgrade pip
+
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
     PYTHONDONTWRITEBYTECODE=1 \
@@ -41,6 +44,7 @@ RUN apt-get update \
         build-essential
 
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
+# poetry suggested install, rather than using pip
 RUN curl -sSL https://install.python-poetry.org | python -
 
 # copy project requirement files here to ensure they will be cached.
