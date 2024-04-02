@@ -1,0 +1,95 @@
+import json
+import os
+
+import pandas as pd
+from splink.duckdb.duckdb_linker import DuckDBLinker
+
+from hmpps_person_match_score import standardisation_functions
+from hmpps_person_match_score.domain.events import Events
+from hmpps_person_match_score.views.base_view import BaseView
+
+
+class MatchView(BaseView):
+    """
+    Match View
+    """
+    ROUTE = "/match"
+    
+    def post(self):
+        """
+        GET request handler
+        """
+        try:
+            self.logger.info("Match score requested")
+
+            data = pd.DataFrame(json.loads(self.request.get_data().decode("utf-8")))
+
+            data = standardisation_functions.standardise_pnc_number(data, pnc_col="pnc_number")
+            data = standardisation_functions.standardise_dob(data, dob_col="dob")
+            data = standardisation_functions.standardise_names(data, name_cols=["first_name", "surname"])
+            data = standardisation_functions.fix_zero_length_strings(data)
+
+            # If no source dataset provided assume it's in the same format we expect,
+            # our algorithm does not need to know which record is which
+            # so this is just a formality
+            if len(data["source_dataset"]) == 0:
+                data["source_dataset"] = pd.Series({"0": "libra", "1": "delius"})
+                data["source_dataset"] = data["source_dataset"].astype("str")
+
+            response = self.score(data)
+            self.event_logger.info(
+                Events.MATCH_SCORE_GENERATED,
+                extra={"custom_dimensions": self.custom_dimensions_from(response)},
+            )
+            return response
+        except Exception as e:
+            self.logger.exception("Exception at match endpoint")
+            return e.args[0], 500
+        
+    @staticmethod
+    def custom_dimensions_from(response: dict):
+        return {
+            key: value["0"]
+            for key, value in response.items()
+            if key
+            in [
+                "unique_id_l",
+                "unique_id_r",
+                "pnc_number_std_l",
+                "pnc_number_std_r",
+                "source_dataset_l",
+                "source_dataset_r",
+                "match_probability",
+            ]
+        }
+
+
+    def score(self, data):
+        # Set up DuckDB linker
+        linker = DuckDBLinker(
+            [
+                data[data["source_dataset"] == data["source_dataset"].unique()[0]],
+                data[data["source_dataset"] == data["source_dataset"].unique()[1]],
+            ],
+            input_table_aliases=[
+                data["source_dataset"].unique()[0],
+                data["source_dataset"].unique()[1],
+            ],
+        )
+        linker.load_settings_from_json(self.get_model_path())
+
+        # Make predictions
+        json_output = linker.predict().as_pandas_dataframe().to_json()
+
+        # Return
+        return json.loads(json_output)
+    
+    @staticmethod
+    def get_model_path():
+        """
+        Get model path from environment variable
+        """
+        model_path = os.environ.get("MODEL_PATH", "./hmpps_person_match_score/model.json")
+        if not os.path.exists(model_path):
+            raise Exception(f"MODEL_PATH {model_path} does not exist.")
+        return model_path
