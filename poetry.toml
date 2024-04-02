@@ -1,4 +1,3 @@
 [virtualenvs]
 in-project = true
-# Set to true once whl install removed
-options.no-setuptools = false
+options.no-setuptools = true

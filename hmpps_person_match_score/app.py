@@ -1,11 +1,14 @@
 import logging
+import os
+import platform
+import sys
 
 from flask import Flask
-from views.health_view import HealthView
-from views.match_view import MatchView
-from views.ping_view import PingView
 
 from hmpps_person_match_score.app_insights import AppInsightsLogger
+from hmpps_person_match_score.views.health_view import HealthView
+from hmpps_person_match_score.views.match_view import MatchView
+from hmpps_person_match_score.views.ping_view import PingView
 
 
 class MatchScoreFlaskApplication:
@@ -13,8 +16,11 @@ class MatchScoreFlaskApplication:
     Match Score Flask Application
     """
 
+    APPLICATION_NAME = "hmpps-person-match-score"
+
     def __init__(self) -> None:
-        self.app = Flask(__name__)
+        self.app = Flask(self.APPLICATION_NAME)
+        self.wsgi_app = self.app.wsgi_app
         self.initialise()
 
     def initialise(self):
@@ -22,36 +28,62 @@ class MatchScoreFlaskApplication:
         Initialise application
         """
         self.initialise_logger()
+        self.log_version()
         self.initialise_request_handlers()
-        
+        self.load_config()
+
+    def log_version(self):
+        """
+        Log application version
+        """
+        version = " ".join(sys.version.split(" ")[:1])
+        self.logger.info(f"Starting hmpps-person-match-score using Python {version} on" f" {platform.platform()}")
+
+    def load_config(self):
+        """
+        Load application config
+        """
+        # TODO: Check this is even required
+        self.app.config.from_mapping(
+            SECRET_KEY="dev",
+            DATABASE=os.path.join(self.app.instance_path, "hmpps_person_match_score.sqlite"),
+        )
+
     def initialise_request_handlers(self):
         """
         Set up request handlers, passes logger to each view
         Each request handler can define ROUTE const as url rule
         """
-        for request_handler in [
-            PingView,
-            HealthView, 
-            MatchView
-        ]:
-            self.app.add_url_rule(request_handler.ROUTE, view_func=request_handler.as_view(
-                request_handler.__name__, self.logger, self.event_logger))
+        for request_handler in [PingView, HealthView, MatchView]:
+            self.app.add_url_rule(
+                request_handler.ROUTE,
+                view_func=request_handler.as_view(
+                    request_handler.__name__,
+                    self.logger_instance.get_logger(request_handler.__name__),
+                    self.logger_instance.get_event_logger(request_handler.__name__),
+                ),
+            )
 
     def initialise_logger(self):
         """
         Set up application logger
         """
-        logging.basicConfig(level=logging.INFO)
-        # self.wsgi_app = app_insights_logger().initRequestMiddleware(self.wsgi_app)
-        logger_instance = AppInsightsLogger.instance()
-        self.logger = logger_instance.get_logger(__name__)
-        self.event_logger = logger_instance.get_event_logger(__name__)
+        logging.basicConfig(
+            level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
+        )
+        self.logger_instance = AppInsightsLogger.instance()
+        # TODO: Actually enable middleware
+        self.logger_instance.initRequestMiddleware(self.app)
+        # TODO: needs improving
+        self.logger = self.logger_instance.get_logger(__name__)
+        self.event_logger = self.logger_instance.get_event_logger(__name__)
 
     def run(self):
         """
         Run the Application
         """
         self.app.run()
+
 
 if __name__ == "__main__":
     MatchScoreFlaskApplication().run()

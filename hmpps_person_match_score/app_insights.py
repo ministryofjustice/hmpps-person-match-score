@@ -63,5 +63,4 @@ class AppInsightsLogger:
         if self._use_ai:
             exporter = AzureExporter()
             exporter.add_telemetry_processor(role_name_processor)
-            # TODO: Actually Add middleware
             return FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))

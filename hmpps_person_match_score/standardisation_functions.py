@@ -21,7 +21,7 @@ def standardise_pnc_number(df, pnc_col="pnc_number", drop_orig=True):
     """
     data = df.copy(deep=True)
 
-    # Special case where dob is passed as "pnc": {} so is filled with np.nan i.e. float, 
+    # Special case where dob is passed as "pnc": {} so is filled with np.nan i.e. float,
     # here we fill with None and cast to string
     if data[pnc_col].dtype == "float64":
         data = data.replace({np.nan: None})

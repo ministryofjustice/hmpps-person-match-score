@@ -13,8 +13,9 @@ class MatchView(BaseView):
     """
     Match View
     """
+
     ROUTE = "/match"
-    
+
     def post(self):
         """
         GET request handler
@@ -45,7 +46,7 @@ class MatchView(BaseView):
         except Exception as e:
             self.logger.exception("Exception at match endpoint")
             return e.args[0], 500
-        
+
     @staticmethod
     def custom_dimensions_from(response: dict):
         return {
@@ -62,7 +63,6 @@ class MatchView(BaseView):
                 "match_probability",
             ]
         }
-
 
     def score(self, data):
         # Set up DuckDB linker
@@ -83,7 +83,7 @@ class MatchView(BaseView):
 
         # Return
         return json.loads(json_output)
-    
+
     @staticmethod
     def get_model_path():
         """

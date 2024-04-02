@@ -20,7 +20,7 @@
 #         app_insights_logger().initRequestMiddleware(app)
 
 #         version = " ".join(sys.version.split(" ")[:1])
-#         logger(__name__).info(f"Starting hmpps-person-match-score using Python {version} on" 
+#         logger(__name__).info(f"Starting hmpps-person-match-score using Python {version} on"
 #                               f" {platform.platform()}")
 
 #         app.config.from_mapping(

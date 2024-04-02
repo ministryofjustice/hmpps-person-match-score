@@ -1,42 +1,54 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9.18-slim-bullseye as base
 
-ENV PYTHONFAULTHANDLER=1 \
-    PYTHONHASHSEED=random \
-    PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 \
+    # prevents python creating .pyc files
+    PYTHONDONTWRITEBYTECODE=1 \
+    \
+    # pip
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    \
+    # poetry
+    # https://python-poetry.org/docs/configuration/#using-environment-variables
+    POETRY_VERSION=1.8.2 \
+    # make poetry install to this location
+    POETRY_HOME="/opt/poetry" \
+    # make poetry create the virtual environment in the project's root
+    # it gets named `.venv`
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    # do not ask any interactive question
+    POETRY_NO_INTERACTION=1 \
+    \
+    # paths
+    # this is where our requirements + virtual environment will live
+    PYSETUP_PATH="/opt/pysetup" \
+    VENV_PATH="/opt/pysetup/.venv"
 
-WORKDIR /app
+# prepend poetry and venv to path
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 ##############
 # BUILD stage
 ##############
 FROM base as build
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        # deps for installing poetry
+        curl \
+        # deps for building python deps
+        build-essential
 
-ENV PIP_DEFAULT_TIMEOUT=100 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.8.2
+# install poetry - respects $POETRY_VERSION & $POETRY_HOME
+RUN curl -sSL https://install.python-poetry.org | python -
 
-# build-time OS dependencies
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get install -y \
-        gcc \
-        libc-dev \
-        libffi-dev \
-        g++
-
-# install Poetry
-RUN pip install "poetry==$POETRY_VERSION"
+# copy project requirement files here to ensure they will be cached.
+WORKDIR $PYSETUP_PATH
+COPY poetry.lock pyproject.toml ./
 
 # install Python dependencies in virtual environment
-COPY . .
-RUN poetry install
-
-# build the app in virtual environment
-RUN poetry build
-RUN .venv/bin/pip install dist/*.whl
-RUN mv .venv /venv
+RUN poetry install --no-dev
 
 ##############
 # FINAL stage
@@ -48,10 +60,14 @@ RUN apt-get install -y libstdc++ \
     && rm -rf /var/lib/apt/lists/*
 
 # copy the built virtual environment and entry point
-COPY --from=build /venv /app/.venv
-COPY docker-entrypoint.sh wsgi.py ./
+COPY --from=build $PYSETUP_PATH $PYSETUP_PATH
 
-ENV MODEL_PATH='/app/.venv/lib/python3.9/site-packages/hmpps_person_match_score/model.json'
+COPY ./hmpps_person_match_score /opt/hmpps_person_match_score/
+COPY docker-entrypoint.sh wsgi.py /opt/
+
+WORKDIR /opt/
+
+ENV MODEL_PATH='/opt/hmpps_person_match_score/model.json'
 
 # create app user
 RUN groupadd -g 1001 appuser && \

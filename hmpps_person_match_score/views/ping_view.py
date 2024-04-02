@@ -5,8 +5,9 @@ class PingView(BaseView):
     """
     Ping View
     """
+
     ROUTE = "/ping"
-    
+
     def get(self):
         """
         GET request handler

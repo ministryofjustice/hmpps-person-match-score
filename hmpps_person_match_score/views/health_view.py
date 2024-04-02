@@ -5,8 +5,9 @@ class HealthView(BaseView):
     """
     Health View
     """
+
     ROUTE = "/health"
-    
+
     def get(self):
         """
         GET request handler
