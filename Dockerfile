@@ -37,6 +37,7 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 ##############
 FROM base as build
 RUN apt-get update \
+    && apt-get -y upgrade \
     && apt-get install --no-install-recommends -y \
         # deps for installing poetry
         curl \
@@ -58,10 +59,6 @@ RUN poetry install --no-dev
 # FINAL stage
 ##############
 FROM base as final
-
-# runtime OS dependencies
-RUN apt-get install -y libstdc++ \
-    && rm -rf /var/lib/apt/lists/*
 
 # copy the built virtual environment and entry point
 COPY --from=build $PYSETUP_PATH $PYSETUP_PATH
