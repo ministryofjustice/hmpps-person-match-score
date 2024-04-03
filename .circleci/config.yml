@@ -26,10 +26,6 @@ jobs:
 workflows:
   build-test-and-deploy:
     jobs:
-      - hmpps/trivy_latest_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
       - build:
           context:
             - hmpps-common-vars
@@ -106,6 +102,7 @@ workflows:
               only:
                 - main
     jobs:
+      # DISABLED UNTIL BUILD IS REFACTOR
       # - hmpps/trivy_latest_scan:
       #     slack_channel: << pipeline.parameters.alerts-slack-channel >>
       #     context:
