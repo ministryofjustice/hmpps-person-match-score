@@ -26,7 +26,7 @@ jobs:
           path: test_results
 
 workflows:
-  pr-build-test:
+  build-test:
     jobs:
       - build:
           context:
