@@ -5,6 +5,15 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
 
+# load in build details
+# loaded in as part of docker build (as args)
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+ENV APP_BUILD_NUMBER ${BUILD_NUMBER}
+ENV APP_GIT_REF ${GIT_REF}
+ENV APP_GIT_BRANCH ${GIT_BRANCH}
+
 WORKDIR /app
 
 ##############

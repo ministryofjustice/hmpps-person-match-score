@@ -16,7 +16,10 @@ run:
 	poetry run flask run
 
 build:
-	docker build . -t hmpps_person_match_score
+	docker build . --tag hmpps_person_match_score \
+		--build-arg BUILD_NUMBER="local" \
+		--build-arg GIT_REF=$(shell git rev-parse --short HEAD) \
+		--build-arg GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 test:
 	poetry run pytest
