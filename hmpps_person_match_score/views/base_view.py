@@ -8,8 +8,7 @@ class BaseView(MethodView):
     Include request as part of the object
     """
 
-    def __init__(self, logger, event_logger) -> None:
+    def __init__(self, logger) -> None:
         super().__init__()
         self.logger = logger
-        self.event_logger = event_logger
         self.request = flask.request

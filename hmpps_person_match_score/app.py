@@ -1,5 +1,4 @@
 import logging
-import os
 import platform
 import sys
 
@@ -39,16 +38,6 @@ class MatchScoreFlaskApplication:
         version = " ".join(sys.version.split(" ")[:1])
         self.logger.info(f"Starting hmpps-person-match-score using Python {version} on" f" {platform.platform()}")
 
-    def load_config(self):
-        """
-        Load application config
-        """
-        # TODO: Check this is even required
-        self.app.config.from_mapping(
-            SECRET_KEY="dev",
-            DATABASE=os.path.join(self.app.instance_path, "hmpps_person_match_score.sqlite"),
-        )
-
     def initialise_request_handlers(self):
         """
         Set up request handlers, passes logger to each view
@@ -59,8 +48,7 @@ class MatchScoreFlaskApplication:
                 request_handler.ROUTE,
                 view_func=request_handler.as_view(
                     request_handler.__name__,
-                    self.logger_instance.get_logger(request_handler.__name__),
-                    self.logger_instance.get_event_logger(request_handler.__name__),
+                    self.logger
                 ),
             )
 
@@ -71,12 +59,7 @@ class MatchScoreFlaskApplication:
         logging.basicConfig(
             level=logging.INFO, format="%(asctime)s %(levelname)-8s %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
         )
-        self.logger_instance = AppInsightsLogger.instance()
-        # TODO: Actually enable middleware
-        self.logger_instance.initRequestMiddleware(self.app)
-        # TODO: needs improving
-        self.logger = self.logger_instance.get_logger(__name__)
-        self.event_logger = self.logger_instance.get_event_logger(__name__)
+        self.logger = AppInsightsLogger().logger
 
     def run(self):
         """
