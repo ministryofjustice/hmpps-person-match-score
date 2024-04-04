@@ -12,8 +12,4 @@ class PingView(BaseView):
         """
         GET request handler
         """
-        try:
-            return "pong"
-        except Exception as e:
-            # logger(__name__).exception("Exception at ping endpoint")
-            return e.args[0], 500
+        return "pong"

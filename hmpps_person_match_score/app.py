@@ -35,7 +35,8 @@ class MatchScoreFlaskApplication:
         Log application version
         """
         version = " ".join(sys.version.split(" ")[:1])
-        self.logger.info(f"Starting hmpps-person-match-score using Python {version} on" f" {platform.platform()}")
+        log_message = f"Starting hmpps-person-match-score using Python {version} on {platform.platform()}"
+        self.logger.info(log_message)
 
     def initialise_request_handlers(self):
         """

@@ -20,6 +20,9 @@ class AppInsightsLogger:
         self.add_azure_event_handler()
         self.add_azure_log_handler()
 
+        # TODO: move middleware to add setup
+        self.init_request_middleware()
+
     @staticmethod
     def role_name_processor(envelope):
         envelope.tags["ai.cloud.role"] = "hmpps-person-match-score"
@@ -44,7 +47,7 @@ class AppInsightsLogger:
             handler.add_telemetry_processor(self.role_name_processor)
             self.addHandler(handler)
 
-    def initRequestMiddleware(self, app):
+    def init_request_middleware(self, app):
         if self._use_ai:
             exporter = AzureExporter()
             exporter.add_telemetry_processor(self.role_name_processor)
