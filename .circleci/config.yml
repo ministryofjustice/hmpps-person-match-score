@@ -21,7 +21,9 @@ jobs:
       - run: poetry self update 1.8.2
       - run: make install
       - run: make lint
-      - run: make test
+      - run: make test-ci
+      - store_test_results:
+          path: test_results
 
 workflows:
   pr-build-test:
@@ -34,7 +36,7 @@ workflows:
               ignore: 
                 - main
       - hmpps/build_docker:
-          name: build_docker
+          name: build docker image
           publish: false
           context:
             - hmpps-common-vars

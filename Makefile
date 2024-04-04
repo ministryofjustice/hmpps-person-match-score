@@ -23,3 +23,6 @@ build:
 
 test:
 	poetry run pytest
+
+test-ci:
+	poetry run pytest --junitxml=test_results/pytest-report.xml
