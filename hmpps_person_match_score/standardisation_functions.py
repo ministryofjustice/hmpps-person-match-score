@@ -145,7 +145,7 @@ def fix_zero_length_strings(df):
     """
     string_cols = df.select_dtypes(include="object").columns.tolist()
     df[string_cols] = df[string_cols].applymap(
-        lambda x: None if (x is None or x == np.nan or len(x) == 0 or set(x) == set(" ")) else x.strip()
+        lambda x: None if (x is None or x == np.nan or len(x) == 0 or set(x) == set(" ")) else x.strip(),
     )
     return df
 
