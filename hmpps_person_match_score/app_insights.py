@@ -11,6 +11,7 @@ class AppInsightsLogger:
     """
     Appinsight logger
     """
+
     _use_ai = True
 
     def __init__(self):

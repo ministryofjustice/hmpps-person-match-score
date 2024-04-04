@@ -45,10 +45,7 @@ class MatchScoreFlaskApplication:
         for request_handler in [PingView, HealthView, MatchView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
-                view_func=request_handler.as_view(
-                    request_handler.__name__,
-                    self.logger
-                ),
+                view_func=request_handler.as_view(request_handler.__name__, self.logger),
             )
 
     def initialise_logger(self):

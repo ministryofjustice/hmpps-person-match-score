@@ -21,4 +21,4 @@ build:
 	docker build . -t hmpps_person_match_score
 
 test:
-	poetry run pytest
+	poetry run pytest -v
