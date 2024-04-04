@@ -29,7 +29,6 @@ class MatchScoreFlaskApplication:
         self.initialise_logger()
         self.log_version()
         self.initialise_request_handlers()
-        self.load_config()
 
     def log_version(self):
         """
