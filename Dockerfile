@@ -1,6 +1,15 @@
 # syntax=docker/dockerfile:1
 FROM python:3.9.18-slim-bullseye as base
 
+# load in build details
+ARG BUILD_NUMBER
+ARG GIT_REF
+ARG GIT_BRANCH
+
+ENV APP_BUILD_NUMBER ${BUILD_NUMBER} \
+    APP_GIT_REF ${GIT_REF} \
+    APP_GIT_BRANCH ${GIT_BRANCH}
+
 # Update pip
 RUN pip install --upgrade pip
 

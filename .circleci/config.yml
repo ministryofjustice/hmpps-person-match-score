@@ -21,17 +21,41 @@ jobs:
       - run: poetry self update 1.8.2
       - run: make install
       - run: make lint
-      - run: make test
+      - run: make test-ci
+      - store_test_results:
+          path: test_results
 
 workflows:
+  build-test:
+    jobs:
+      - build:
+          context:
+            - hmpps-common-vars
+          filters:
+            branches:
+              ignore: 
+                - main
+      - hmpps/build_docker:
+          name: build docker image
+          publish: false
+          context:
+            - hmpps-common-vars
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: 
+                - main
+
   build-test-and-deploy:
     jobs:
       - build:
           context:
             - hmpps-common-vars
           filters:
-            tags:
-              ignore: /.*/
+            branches:
+              only:
+                - main
       - hmpps/build_docker:
           name: build_docker
           context:
@@ -92,3 +116,38 @@ workflows:
             - hmpps-person-record-prod
           requires:
             - request-prod-approval
+
+  security:
+    triggers:
+      - schedule:
+          cron: "34 7 * * 1-5"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      # DISABLED UNTIL BUILD IS REFACTOR
+      # - hmpps/trivy_latest_scan:
+      #     slack_channel: << pipeline.parameters.alerts-slack-channel >>
+      #     context:
+      #       - hmpps-common-vars
+      - hmpps/veracode_pipeline_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars
+
+  security-weekly:
+    triggers:
+      - schedule:
+          cron: "0 7 * * 1"
+          filters:
+            branches:
+              only:
+                - main
+    jobs:
+      - hmpps/veracode_policy_scan:
+          slack_channel: << pipeline.parameters.alerts-slack-channel >>
+          context:
+            - veracode-credentials
+            - hmpps-common-vars

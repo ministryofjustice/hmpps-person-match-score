@@ -1,6 +1,7 @@
 /instance/
 __pycache__/
 /dist/
+test_results/
 
 ### Pycharm IDEA ###
 .idea
@@ -8,3 +9,4 @@ __pycache__/
 
 .ruff_cache
 .venv
+.vscode

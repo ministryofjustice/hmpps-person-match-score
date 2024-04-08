@@ -2,6 +2,7 @@ import json
 import os
 
 import pandas as pd
+import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
 from hmpps_person_match_score import standardisation_functions
@@ -15,6 +16,21 @@ class MatchView(BaseView):
     """
 
     ROUTE = "/match"
+
+    SCHEMA = pa.schema(
+    [
+        pa.field("source_dataset", pa.string(), nullable=True),
+        pa.field("unique_id", pa.string(), nullable=True),
+        pa.field("pnc_number_std", pa.string(), nullable=True),
+        pa.field("dob_std", pa.string(), nullable=True),
+        pa.field("surname_std", pa.string(), nullable=True),
+        pa.field("forename1_std", pa.string(), nullable=True),
+        pa.field("forename2_std", pa.string(), nullable=True),
+        pa.field("forename3_std", pa.string(), nullable=True),
+        pa.field("forename4_std", pa.string(), nullable=True),
+        pa.field("forename5_std", pa.string(), nullable=True),
+    ],
+)
 
     def post(self):
         """
@@ -38,7 +54,7 @@ class MatchView(BaseView):
                 data["source_dataset"] = data["source_dataset"].astype("str")
 
             response = self.score(data)
-            self.event_logger.info(
+            self.logger.info(
                 Events.MATCH_SCORE_GENERATED,
                 extra={"custom_dimensions": self.custom_dimensions_from(response)},
             )
@@ -65,12 +81,16 @@ class MatchView(BaseView):
         }
 
     def score(self, data):
+        row_1 = data[data["source_dataset"] == data["source_dataset"].unique()[0]]
+        row_2 = data[data["source_dataset"] == data["source_dataset"].unique()[1]]
+
+        # Important to impose explicit schema - otherwise where a column contains only
+        # None DuckDB will have no way of knowing it's a nullable string column
+        row_arrow_1 = pa.Table.from_pandas(row_1, schema=self.SCHEMA, preserve_index=False)
+        row_arrow_2 = pa.Table.from_pandas(row_2, schema=self.SCHEMA, preserve_index=False)
         # Set up DuckDB linker
         linker = DuckDBLinker(
-            [
-                data[data["source_dataset"] == data["source_dataset"].unique()[0]],
-                data[data["source_dataset"] == data["source_dataset"].unique()[1]],
-            ],
+            [row_arrow_1, row_arrow_2],
             input_table_aliases=[
                 data["source_dataset"].unique()[0],
                 data["source_dataset"].unique()[1],

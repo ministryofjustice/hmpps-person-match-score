@@ -6,6 +6,7 @@ from flask import Flask
 
 from hmpps_person_match_score.app_insights import AppInsightsLogger
 from hmpps_person_match_score.views.health_view import HealthView
+from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
 from hmpps_person_match_score.views.ping_view import PingView
 
@@ -43,7 +44,7 @@ class MatchScoreFlaskApplication:
         Set up request handlers, passes logger to each view
         Each request handler can define ROUTE const as url rule
         """
-        for request_handler in [PingView, HealthView, MatchView]:
+        for request_handler in [PingView, HealthView, MatchView, InfoView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
                 view_func=request_handler.as_view(request_handler.__name__, self.logger),
@@ -58,7 +59,7 @@ class MatchScoreFlaskApplication:
             format="%(asctime)s %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
-        self.logger = AppInsightsLogger().logger
+        self.logger = AppInsightsLogger(self.app).logger
 
     def run(self):
         """
