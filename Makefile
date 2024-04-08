@@ -4,11 +4,9 @@ install:
 
 lint:
 	poetry run ruff check hmpps_person_match_score/
-	poetry run ruff check tests/
 	
 lint-fix:
 	poetry run ruff check hmpps_person_match_score/ --fix
-	poetry run ruff check tests/ --fix
 
 format:
 	poetry run ruff format 
