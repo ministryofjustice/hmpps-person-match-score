@@ -42,4 +42,4 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: hmpps-person-match-score
-  alertSeverity: slack-hmpps-user-preferences
+  alertSeverity: hmpps-person-record-alerts-prod
