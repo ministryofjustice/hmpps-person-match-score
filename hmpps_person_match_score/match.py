@@ -38,11 +38,23 @@ def ping():
     except Exception as e:
         logger(__name__).exception("Exception at ping endpoint")
         return e.args[0], 500
+    
+
+@blueprint.route("/info", methods=["GET"])
+def info():
+    APP_BUILD_NUMBER = os.environ.get('APP_BUILD_NUMBER', 'unknown')
+    APP_GIT_REF = os.environ.get('APP_GIT_REF', 'unknown')
+    APP_GIT_BRANCH = os.environ.get('APP_GIT_BRANCH', "unknown")
+    return dict(
+        version=APP_BUILD_NUMBER,
+        commit_id=APP_GIT_REF,
+        branch=APP_GIT_BRANCH,
+    )
 
 
 @blueprint.route("/health", methods=["GET"])
 def health():
-    return "UP"
+    return {"status": "UP"}
 
 
 @blueprint.route("/match", methods=["POST"])

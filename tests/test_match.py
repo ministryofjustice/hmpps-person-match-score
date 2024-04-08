@@ -31,8 +31,8 @@ def runner(app):
 
 def test_match(client):
     response = client.post("/match", json=valid_sample)
+    assert response.headers.get("Content-Type") == "application/json"
     # Note: no Bayes Factors asserted - match probability should be sufficient
-    assert response is not None
     assert response.status_code == 200
     assert response.json["match_probability"]["0"] == 0.999353426
     assert response.json["source_dataset_l"]["0"] == "delius"
@@ -62,8 +62,18 @@ def test_match(client):
 def test_health(client):
     response = client.get("/health")
     assert response is not None
+    assert response.headers.get("Content-Type") == "application/json"
     assert response.status_code == 200
+    assert response.json == {"status": "UP"}
 
+def test_info(client):
+    response = client.get("/info")
+    assert response is not None
+    assert response.headers.get("Content-Type") == "application/json"
+    assert response.status_code == 200
+    assert response.json["version"] == "number"
+    assert response.json["commit_id"] == "ref"
+    assert response.json["branch"] == "branch"
 
 valid_sample = {
     "unique_id": {"0": "861", "1": "862"},
