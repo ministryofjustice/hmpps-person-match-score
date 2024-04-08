@@ -45,11 +45,11 @@ def info():
     APP_BUILD_NUMBER = os.environ.get('APP_BUILD_NUMBER', 'unknown')
     APP_GIT_REF = os.environ.get('APP_GIT_REF', 'unknown')
     APP_GIT_BRANCH = os.environ.get('APP_GIT_BRANCH', "unknown")
-    return json.dumps(dict(
+    return dict(
         version=APP_BUILD_NUMBER,
         commit_id=APP_GIT_REF,
         branch=APP_GIT_BRANCH,
-    ))
+    )
 
 
 @blueprint.route("/health", methods=["GET"])

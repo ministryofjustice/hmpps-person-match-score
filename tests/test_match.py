@@ -64,7 +64,16 @@ def test_health(client):
     assert response is not None
     assert response.headers.get("Content-Type") == "application/json"
     assert response.status_code == 200
+    assert response.json == {"status": "UP"}
 
+def test_info(client):
+    response = client.get("/info")
+    assert response is not None
+    assert response.headers.get("Content-Type") == "application/json"
+    assert response.status_code == 200
+    assert response.json["version"] == "number"
+    assert response.json["commit_id"] == "ref"
+    assert response.json["branch"] == "branch"
 
 valid_sample = {
     "unique_id": {"0": "861", "1": "862"},
