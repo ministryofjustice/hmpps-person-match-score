@@ -14,11 +14,11 @@ class InfoView(BaseView):
         """
         GET request handler
         """
-        APP_BUILD_NUMBER = os.environ.get("APP_BUILD_NUMBER", "unknown")
-        APP_GIT_REF = os.environ.get("APP_GIT_REF", "unknown")
-        APP_GIT_BRANCH = os.environ.get("APP_GIT_BRANCH", "unknown")
+        version = os.environ.get("APP_BUILD_NUMBER", "unknown")
+        commit_id = os.environ.get("APP_GIT_REF", "unknown")
+        branch = os.environ.get("APP_GIT_BRANCH", "unknown")
         return dict(
-            version=APP_BUILD_NUMBER,
-            commit_id=APP_GIT_REF,
-            branch=APP_GIT_BRANCH,
+            version=version,
+            commit_id=commit_id,
+            branch=branch,
         )

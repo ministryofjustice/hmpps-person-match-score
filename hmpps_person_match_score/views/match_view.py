@@ -18,19 +18,19 @@ class MatchView(BaseView):
     ROUTE = "/match"
 
     SCHEMA = pa.schema(
-    [
-        pa.field("source_dataset", pa.string(), nullable=True),
-        pa.field("unique_id", pa.string(), nullable=True),
-        pa.field("pnc_number_std", pa.string(), nullable=True),
-        pa.field("dob_std", pa.string(), nullable=True),
-        pa.field("surname_std", pa.string(), nullable=True),
-        pa.field("forename1_std", pa.string(), nullable=True),
-        pa.field("forename2_std", pa.string(), nullable=True),
-        pa.field("forename3_std", pa.string(), nullable=True),
-        pa.field("forename4_std", pa.string(), nullable=True),
-        pa.field("forename5_std", pa.string(), nullable=True),
-    ],
-)
+        [
+            pa.field("source_dataset", pa.string(), nullable=True),
+            pa.field("unique_id", pa.string(), nullable=True),
+            pa.field("pnc_number_std", pa.string(), nullable=True),
+            pa.field("dob_std", pa.string(), nullable=True),
+            pa.field("surname_std", pa.string(), nullable=True),
+            pa.field("forename1_std", pa.string(), nullable=True),
+            pa.field("forename2_std", pa.string(), nullable=True),
+            pa.field("forename3_std", pa.string(), nullable=True),
+            pa.field("forename4_std", pa.string(), nullable=True),
+            pa.field("forename5_std", pa.string(), nullable=True),
+        ],
+    )
 
     def post(self):
         """

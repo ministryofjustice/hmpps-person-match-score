@@ -23,7 +23,7 @@ def test_dob_1():
             "E": None,
             "F": None,
             "G": None,
-        }
+        },
     ]
 
     df = pd.DataFrame(names_list)
