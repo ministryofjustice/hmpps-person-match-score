@@ -21,8 +21,8 @@ class TestMatchView:
     def test_match(self, client):
         response = client.post(MatchView.ROUTE, json=self.valid_sample)
         # Note: no Bayes Factors asserted - match probability should be sufficient
-        assert response is not None
         assert response.status_code == 200
+        assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.999353426
         assert response.json["source_dataset_l"]["0"] == "delius"
         assert response.json["unique_id_l"]["0"] == "862"

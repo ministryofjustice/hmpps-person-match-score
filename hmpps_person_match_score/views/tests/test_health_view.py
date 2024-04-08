@@ -12,4 +12,5 @@ class TestHealthView:
         """
         response = client.get(HealthView.ROUTE)
         assert response.status_code == 200
-        assert response.text == "UP"
+        assert response.headers.get("Content-Type") == "application/json"
+        assert response.json == {"status": "UP"}

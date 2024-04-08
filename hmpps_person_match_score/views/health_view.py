@@ -12,4 +12,4 @@ class HealthView(BaseView):
         """
         GET request handler
         """
-        return "UP"
+        return {"status": "UP"}
