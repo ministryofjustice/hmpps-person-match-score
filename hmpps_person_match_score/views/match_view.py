@@ -5,8 +5,8 @@ import pandas as pd
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
-from hmpps_person_match_score import standardisation_functions
 from hmpps_person_match_score.domain.events import Events
+from hmpps_person_match_score.utils import standardisation_functions
 from hmpps_person_match_score.views.base_view import BaseView
 
 
