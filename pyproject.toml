@@ -36,14 +36,51 @@ dummy-variable-rgx = "^_$"
 select = [
     # pycodestyle
     "E",
+    "W",
+    # pep8-naming
+    "N",
+    # pyupgrade
+    "UP",
     # Pyflakes
     "F",
     # pyupgrade
     "UP",
+    # flake8-builtins
+    "A",
+    # flake8-commas
+    "COM",
     # flake8-bugbear
     "B",
     # flake8-simplify
     "SIM",
+    # flake8-2020
+    "YTT",
+    # flake8-blind-except
+    "BLE",
+    # flake8-bandit
+    "S",
+    # flake8-quotes
+    "Q",
+    # flake8-logging
+    "LOG",
+    # flake8-logging-format
+    "G",
+    # flake8-no-pep420
+    "INP",
+    # flake8-pie
+    "PIE",
+    # flake8-self
+    "SLF",
     # isort
     "I",
+    # pylint
+    "PL",
 ]
+ignore = [
+    # magic-value-comparison
+    "PLR2004"
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+# Also ignore `S: flake8-bandit` in all `test_*.py` files.
+"test_*.py" = ["S"]

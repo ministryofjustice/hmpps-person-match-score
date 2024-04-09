@@ -1,4 +1,5 @@
 import logging
+import os
 
 from opencensus.ext.azure.log_exporter import AzureEventHandler, AzureLogHandler
 from opencensus.ext.azure.trace_exporter import AzureExporter
@@ -6,62 +7,48 @@ from opencensus.ext.flask.flask_middleware import FlaskMiddleware
 from opencensus.trace.samplers import ProbabilitySampler
 
 
-def role_name_processor(envelope):
-    envelope.tags["ai.cloud.role"] = "hmpps-person-match-score"
-
-
-def logger(name):
-    return app_insights_logger().get_logger(name)
-
-
-def event_logger(name):
-    return app_insights_logger().get_event_logger(name)
-
-
-def app_insights_logger():
-    return AppInsightsLogger.instance()
-
-
 class AppInsightsLogger:
+    """
+    Appinsight logger
+    """
+
     _use_ai = True
-    _instance = None
 
-    def __init__(self):
-        raise RuntimeError("Call instance() instead")
+    def __init__(self, app):
+        self.logger = logging.getLogger()
+        self.has_instrumentation_key()
+        self.add_azure_event_handler()
+        self.add_azure_log_handler()
 
-    @classmethod
-    def instance(cls):
-        if cls._instance is None:
-            cls._instance = cls.__new__(cls)
-            try:
-                logger = cls._instance.get_logger(__name__)
-            except ValueError as e:
-                assert e.args[0] == "Instrumentation key cannot be none or empty."
-                cls._use_ai = False
-                logger = cls._instance.get_logger(__name__)
-                logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
-        return cls._instance
+        # TODO: move middleware to add setup
+        self.init_request_middleware(app)
 
-    def get_logger(self, name):
-        logger = logging.getLogger(name)
+    @staticmethod
+    def role_name_processor(envelope):
+        envelope.tags["ai.cloud.role"] = "hmpps-person-match-score"
+
+    def has_instrumentation_key(self):
+        """
+        Verify connection string is set
+        """
+        if not os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+            self._use_ai = False
+            self.logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
+
+    def add_azure_log_handler(self):
         if self._use_ai:
             handler = AzureLogHandler()
-            handler.add_telemetry_processor(role_name_processor)
-            logger.addHandler(handler)
-        return logger
+            handler.add_telemetry_processor(self.role_name_processor)
+            self.addHandler(handler)
 
-    def get_event_logger(self, name="CustomEventLogger"):
-        logger = logging.getLogger(name)
-        logger.setLevel(logging.INFO)
+    def add_azure_event_handler(self):
         if self._use_ai:
             handler = AzureEventHandler()
-            handler.add_telemetry_processor(role_name_processor)
-            logger.addHandler(handler)
-        return logger
+            handler.add_telemetry_processor(self.role_name_processor)
+            self.addHandler(handler)
 
-    def initRequestMiddleware(self, app):
+    def init_request_middleware(self, app):
         if self._use_ai:
             exporter = AzureExporter()
-            exporter.add_telemetry_processor(role_name_processor)
-            # TODO: Actually Add middleware
+            exporter.add_telemetry_processor(self.role_name_processor)
             return FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))

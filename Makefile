@@ -4,12 +4,12 @@ install:
 
 lint:
 	poetry run ruff check hmpps_person_match_score/
-	poetry run ruff check tests/
 	
-
 lint-fix:
 	poetry run ruff check hmpps_person_match_score/ --fix
-	poetry run ruff check tests/ --fix
+
+format:
+	poetry run ruff format 
 
 run:
 	export FLASK_APP=hmpps_person_match_score; \
@@ -23,7 +23,7 @@ build:
 		--build-arg GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
 test:
-	poetry run pytest
+	poetry run pytest -v
 
 test-ci:
 	poetry run pytest --junitxml=test_results/pytest-report.xml

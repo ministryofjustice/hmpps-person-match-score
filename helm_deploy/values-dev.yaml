@@ -5,4 +5,3 @@ generic-service:
   ingress:
     host: hmpps-person-match-score-dev.hmpps.service.justice.gov.uk
     tlsSecretName: hmpps-person-record-dev-cert-secret
-
