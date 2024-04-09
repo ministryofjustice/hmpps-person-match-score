@@ -1,11 +1,12 @@
 import logging
+import os
 import platform
 import sys
 
-from flask import Flask
-from opencensus.trace import config_integration
+import flask
+from azure.monitor.opentelemetry import configure_azure_monitor
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
-from hmpps_person_match_score.app_insights import AppInsightsLogger
 from hmpps_person_match_score.views.health_view import HealthView
 from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
@@ -18,9 +19,10 @@ class MatchScoreFlaskApplication:
     """
 
     APPLICATION_NAME = "hmpps-person-match-score"
+    LOGGER_NAME = "hmpps-person-match-score-logger"
 
     def __init__(self) -> None:
-        self.app = Flask(self.APPLICATION_NAME)
+        self.app = flask.Flask(self.APPLICATION_NAME)
         self.wsgi_app = self.app.wsgi_app
         self.initialise()
 
@@ -29,6 +31,7 @@ class MatchScoreFlaskApplication:
         Initialise application
         """
         self.initialise_logger()
+        self.configure_app_insights()
         self.log_version()
         self.initialise_request_handlers()
 
@@ -55,13 +58,30 @@ class MatchScoreFlaskApplication:
         """
         Set up application logger
         """
-        config_integration.trace_integrations(["logging"])
+        self.logger = logging.getLogger(self.LOGGER_NAME)
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
-        self.logger = AppInsightsLogger(self.app).logger
+        self.logger = logging.getLogger(self.LOGGER_NAME)
+
+    def configure_app_insights(self):
+        """
+        Set up appinsights
+        """
+        if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+            os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
+            configure_azure_monitor(
+                instrumentation_options={
+                    "flask": {"enabled": True},
+                    "azure_sdk": {"enabled": True},
+                },
+                logger_name=self.LOGGER_NAME,
+            )
+            FlaskInstrumentor().instrument_app(self.app)
+        else:
+            self.logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
 
     def run(self):
         """

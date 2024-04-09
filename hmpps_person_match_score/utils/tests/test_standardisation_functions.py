@@ -74,7 +74,6 @@ class TestStandardisationFunctions:
         # Unsure this is the best way of handling.  Should we be nulling instead of raising an error.
         # What about people who were actually born 1970-01-01?
 
-
     def test_null_suspicious_dob_std(self):
         """
         Test null date of birth standardisation
@@ -189,7 +188,6 @@ class TestStandardisationFunctions:
 
         pd.testing.assert_frame_equal(df_result, df_expected)
 
-
     def test_pnc_2(self):
         pnc_list = [
             {"id": 1, "pnc_number": "2012/0443841T"},
@@ -215,7 +213,6 @@ class TestStandardisationFunctions:
         df_expected = pd.DataFrame(df_expected)
 
         pd.testing.assert_frame_equal(df_result, df_expected)
-
 
     def test_pnc_3(self):
         pnc_list = [
