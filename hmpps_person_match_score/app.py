@@ -58,7 +58,6 @@ class MatchScoreFlaskApplication:
         """
         Set up application logger
         """
-        self.logger = logging.getLogger(self.LOGGER_NAME)
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s %(levelname)-8s %(message)s",
