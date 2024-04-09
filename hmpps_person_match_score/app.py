@@ -3,6 +3,7 @@ import platform
 import sys
 
 from flask import Flask
+from opencensus.trace import config_integration
 
 from hmpps_person_match_score.app_insights import AppInsightsLogger
 from hmpps_person_match_score.views.health_view import HealthView
@@ -54,6 +55,7 @@ class MatchScoreFlaskApplication:
         """
         Set up application logger
         """
+        config_integration.trace_integrations(["logging"])
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s %(levelname)-8s %(message)s",
