@@ -71,13 +71,7 @@ class MatchScoreFlaskApplication:
         """
         if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
             os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
-            configure_azure_monitor(
-                instrumentation_options={
-                    "flask": {"enabled": True},
-                    "azure_sdk": {"enabled": True},
-                },
-                logger_name=self.LOGGER_NAME,
-            )
+            configure_azure_monitor(logger_name=self.LOGGER_NAME)
             FlaskInstrumentor().instrument_app(self.app)
         else:
             self.logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
