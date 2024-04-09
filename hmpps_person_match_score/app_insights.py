@@ -16,11 +16,10 @@ class AppInsightsLogger:
 
     def __init__(self, app):
         self.logger = logging.getLogger()
+
         self.has_instrumentation_key()
         self.add_azure_event_handler()
         self.add_azure_log_handler()
-
-        # TODO: move middleware to add setup
         self.init_request_middleware(app)
 
     @staticmethod
@@ -51,4 +50,6 @@ class AppInsightsLogger:
         if self._use_ai:
             exporter = AzureExporter()
             exporter.add_telemetry_processor(self.role_name_processor)
-            return FlaskMiddleware(app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0))
+            app.wsgi_app.add_middleWare(FlaskMiddleware(
+                app.wsgi_app, exporter=exporter, sampler=ProbabilitySampler(rate=1.0)))
+        return app
