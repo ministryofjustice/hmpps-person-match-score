@@ -17,6 +17,11 @@ In the event that changes are needed  to it either to improve performance or to 
 * Python 3.8+
 * [Poetry](https://python-poetry.org/docs/)
 
+```
+export POETRY_VERSION=1.8.2
+curl -sSL https://install.python-poetry.org | python -
+```
+
 ## Quickstart
 
 ### Install
