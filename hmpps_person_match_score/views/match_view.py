@@ -34,7 +34,7 @@ class MatchView(BaseView):
 
     def post(self):
         """
-        GET request handler
+        POST request handler
         """
         try:
             self.logger.info("Match score requested")

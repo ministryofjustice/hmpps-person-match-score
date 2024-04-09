@@ -14,7 +14,7 @@ format:
 run:
 	export FLASK_APP=hmpps_person_match_score; \
 	export FLASK_ENV=development; \
-	poetry run flask run
+	poetry run python hmpps_person_match_score/app.py
 
 build:
 	docker build . --tag hmpps_person_match_score \
