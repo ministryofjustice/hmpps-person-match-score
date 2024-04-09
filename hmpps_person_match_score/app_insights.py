@@ -39,13 +39,13 @@ class AppInsightsLogger:
         if self._use_ai:
             handler = AzureLogHandler()
             handler.add_telemetry_processor(self.role_name_processor)
-            self.addHandler(handler)
+            self.logger.addHandler(handler)
 
     def add_azure_event_handler(self):
         if self._use_ai:
             handler = AzureEventHandler()
             handler.add_telemetry_processor(self.role_name_processor)
-            self.addHandler(handler)
+            self.logger.addHandler(handler)
 
     def init_request_middleware(self, app):
         if self._use_ai:
