@@ -72,12 +72,12 @@ FROM base as final
 # copy the built virtual environment and entry point
 COPY --from=build $PYSETUP_PATH $PYSETUP_PATH
 
-COPY ./hmpps_person_match_score /opt/hmpps_person_match_score/
-COPY docker-entrypoint.sh wsgi.py /opt/
+COPY ./hmpps_person_match_score /app/hmpps_person_match_score/
+COPY docker-entrypoint.sh wsgi.py /app/
 
-WORKDIR /opt/
+WORKDIR /app/
 
-ENV MODEL_PATH='/opt/hmpps_person_match_score/model.json'
+ENV MODEL_PATH='/app/hmpps_person_match_score/model.json'
 
 # create app user
 RUN groupadd -g 1001 appuser && \
