@@ -928,6 +928,20 @@ flask = ">=0.12.3,<1.1.3 || >1.1.3,<3.0.0"
 opencensus = ">=0.11.2,<1.0.0"
 
 [[package]]
+name = "opencensus-ext-logging"
+version = "0.1.1"
+description = "OpenCensus logging Integration"
+optional = false
+python-versions = "*"
+files = [
+    {file = "opencensus-ext-logging-0.1.1.tar.gz", hash = "sha256:c203b70f034151dada529f543af330ba17aaffec27d8a5267d03c713eb1de334"},
+    {file = "opencensus_ext_logging-0.1.1-py2.py3-none-any.whl", hash = "sha256:cfdaf5da5d8b195ff3d1af87a4066a6621a28046173f6be4b0b6caec4a3ca89f"},
+]
+
+[package.dependencies]
+opencensus = ">=0.8.0,<1.0.0"
+
+[[package]]
 name = "packaging"
 version = "24.0"
 description = "Core utilities for Python packages"
@@ -1658,4 +1672,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "b2b5f4749d8ca6b7bbf9a11d3d39848f795e933480f547b69cd035ef05c77b13"
+content-hash = "2c796ac139cb72e5dab4dd03c25e79d3ceb4e5ffa544201bbde534b6b33b7521"
