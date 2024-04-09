@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11.4-slim-buster as base
+FROM python:3.12.2-slim-bullseye as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
