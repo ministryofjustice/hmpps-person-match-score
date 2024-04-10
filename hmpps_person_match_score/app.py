@@ -3,9 +3,15 @@ import os
 import platform
 import sys
 
-import flask
+# Must be imported before flask
 from azure.monitor.opentelemetry import configure_azure_monitor
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
+
+# required to be able to log result code to appinsights
+if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
+    os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
+    configure_azure_monitor(logger_name="hmpps-person-match-score-logger")
+
+import flask
 
 from hmpps_person_match_score.views.health_view import HealthView
 from hmpps_person_match_score.views.info_view import InfoView
@@ -31,7 +37,6 @@ class MatchScoreFlaskApplication:
         Initialise application
         """
         self.initialise_logger()
-        self.configure_app_insights()
         self.log_version()
         self.initialise_request_handlers()
 
@@ -58,23 +63,14 @@ class MatchScoreFlaskApplication:
         """
         Set up application logger
         """
+        # this suppresses app insights logs from stdout
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.WARNING,
             format="%(asctime)s %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         self.logger = logging.getLogger(self.LOGGER_NAME)
-
-    def configure_app_insights(self):
-        """
-        Set up appinsights
-        """
-        if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
-            os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
-            configure_azure_monitor(logger_name=self.LOGGER_NAME)
-            FlaskInstrumentor().instrument_app(self.app)
-        else:
-            self.logger.warning("Logs will not post to AppInsights as no instrumentation key has been provided")
+        self.logger.setLevel(logging.INFO)
 
     def run(self):
         """
