@@ -6,7 +6,7 @@ import sys
 # Must be imported before flask
 from azure.monitor.opentelemetry import configure_azure_monitor
 
-# required to be able to log result code to appinsighrs
+# required to be able to log result code to appinsights
 if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
     configure_azure_monitor(logger_name="hmpps-person-match-score-logger")
@@ -63,12 +63,14 @@ class MatchScoreFlaskApplication:
         """
         Set up application logger
         """
+        # this suppresses app insights logs from stdout
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.WARNING,
             format="%(asctime)s %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         self.logger = logging.getLogger(self.LOGGER_NAME)
+        self.logger.setLevel(logging.INFO)
 
     def run(self):
         """
