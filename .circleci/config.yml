@@ -15,7 +15,7 @@ jobs:
   build:
     executor:
       name: hmpps/default
-      tag: 3.12.2
+      tag: 3.12.3
     steps:
       - checkout
       - run: poetry self update 1.8.2
