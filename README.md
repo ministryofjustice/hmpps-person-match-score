@@ -17,15 +17,20 @@ In the event that changes are needed  to it either to improve performance or to 
 * Python 3.8+
 * [Poetry](https://python-poetry.org/docs/)
 
+```
+export POETRY_VERSION=1.8.2
+curl -sSL https://install.python-poetry.org | python -
+```
+
 ## Quickstart
 
 ### Install
 
-`poetry install`
+`make install`
 
 ### Run
 
-`./run.sh`
+`make run`
 
 Ping:
 ```
@@ -54,16 +59,11 @@ The key data item in the response is `match_probability`:
 
 ### Test
 
-`poetry run pytest`
-
-### Update Requirements File
-
-`poetry export --without-hashes -f requirements.txt --output requirements.txt`
+`make test`
 
 ### Docker build
-Note that the Docker build is known to take a very long time both locally and in CI. Previous runs have taken 1888.0s or just over half an hour. It's not clear why this is happening but it will complete successfully after this time.
 
-```docker build ./```
+```make build```
 
 ## Monitoring
 
