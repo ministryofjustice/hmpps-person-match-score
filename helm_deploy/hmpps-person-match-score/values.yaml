@@ -1,6 +1,8 @@
 generic-service:
   nameOverride: hmpps-person-match-score
 
+  replicaCount: 2
+
   image:
     repository: quay.io/hmpps/hmpps-person-match-score
     tag: latest # override at deployment time
@@ -20,10 +22,6 @@ generic-service:
     httpGet:
       path: /health
 
-  autoscaling:
-    enabled: true
-    targetCPUUtilizationPercentage: 100
-
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   namespace_secrets:
     hmpps-person-match-score:
@@ -38,4 +36,4 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: hmpps-person-match-score
-  alertSeverity: slack-hmpps-user-preferences
+  alertSeverity: hmpps-person-record-alerts-prod

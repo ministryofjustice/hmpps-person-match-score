@@ -1,3 +1,3 @@
-import hmpps_person_match_score
+from hmpps_person_match_score.app import MatchScoreFlaskApplication
 
-app = hmpps_person_match_score.create_app()
+app = MatchScoreFlaskApplication().wsgi_app

@@ -1,7 +1,12 @@
 /instance/
 __pycache__/
 /dist/
+test_results/
 
 ### Pycharm IDEA ###
 .idea
 *.iml
+
+.ruff_cache
+.venv
+.vscode
