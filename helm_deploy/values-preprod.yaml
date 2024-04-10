@@ -1,5 +1,11 @@
 ---
 generic-service:
+  scheduledDowntime:
+    enabled: true
+
   ingress:
     host: hmpps-person-match-score-preprod.hmpps.service.justice.gov.uk
     tlsSecretName: hmpps-person-record-preprod-cert-secret
+
+generic-prometheus-alerts:
+  businessHoursOnly: true
