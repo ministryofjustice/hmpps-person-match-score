@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.12.2-slim-bullseye as base
+FROM python:3.12.3-slim-bullseye as base
 
 # load in build details
 ARG BUILD_NUMBER
@@ -12,6 +12,8 @@ ENV APP_BUILD_NUMBER=${BUILD_NUMBER} \
 
 # Update pip
 RUN pip install --upgrade pip
+RUN pip freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U 
+
 
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
