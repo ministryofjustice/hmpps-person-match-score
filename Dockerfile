@@ -10,6 +10,9 @@ ENV APP_BUILD_NUMBER=${BUILD_NUMBER} \
     APP_GIT_REF=${GIT_REF} \
     APP_GIT_BRANCH=${GIT_BRANCH}
 
+RUN apt-get update \
+    && apt-get -y upgrade 
+
 # Update pip
 RUN pip install --upgrade pip
 RUN pip freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U 
