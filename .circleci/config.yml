@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@8.2.1
+  hmpps: ministryofjustice/hmpps@8.6.0
 
 parameters:
   alerts-slack-channel:
@@ -15,7 +15,7 @@ jobs:
   build:
     executor:
       name: hmpps/default
-      tag: 3.12.2
+      tag: 3.12.3
     steps:
       - checkout
       - run: poetry self update 1.8.2
