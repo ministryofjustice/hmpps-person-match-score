@@ -56,7 +56,7 @@ class MatchView(BaseView):
             response = self.score(data)
             self.logger.info(
                 Events.MATCH_SCORE_GENERATED,
-                extra={"custom_dimensions": self.custom_dimensions_from(response)},
+                extra={"custom_dimensions": json.dumps(self.custom_dimensions_from(response))},
             )
             return response
         except Exception as e:
