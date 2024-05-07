@@ -22,6 +22,9 @@ build:
 		--build-arg GIT_REF=$(shell git rev-parse --short HEAD) \
 		--build-arg GIT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 
+run-docker:
+	docker run -p 5000:5000 -t hmpps_person_match_score
+
 test:
 	poetry run pytest -v
 
