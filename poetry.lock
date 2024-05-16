@@ -93,13 +93,13 @@ opentelemetry-api = ">=1.12.0,<2.0.0"
 
 [[package]]
 name = "azure-monitor-opentelemetry"
-version = "1.4.1"
+version = "1.4.2"
 description = "Microsoft Azure Monitor Opentelemetry Distro Client Library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "azure-monitor-opentelemetry-1.4.1.tar.gz", hash = "sha256:44c1a7147617c6cfacc49d7a06ba78717e2a5c218154ba14827db13eebdaf40a"},
-    {file = "azure_monitor_opentelemetry-1.4.1-py3-none-any.whl", hash = "sha256:abc2ec84540f574621ce3d51e4f8dfeb40e2f25343ae6e90750fb25712f322ed"},
+    {file = "azure-monitor-opentelemetry-1.4.2.tar.gz", hash = "sha256:e60ae9e88c9172cb5c84089e100f45bd909e83b8e341346c49654ce8196e9049"},
+    {file = "azure_monitor_opentelemetry-1.4.2-py3-none-any.whl", hash = "sha256:f3959e7a8650c651248572a9b55eb918bd2dde7f595a9ce2c0b1dbdaa2e4a6b2"},
 ]
 
 [package.dependencies]
