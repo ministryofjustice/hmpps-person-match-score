@@ -6,6 +6,8 @@ import sys
 # Must be imported before flask
 from azure.monitor.opentelemetry import configure_azure_monitor
 
+from hmpps_person_match_score.log_formatter import LogFormatter
+
 # required to be able to log result code to appinsights
 if os.environ.get("APPLICATIONINSIGHTS_CONNECTION_STRING"):
     os.environ["OTEL_SERVICE_NAME"] = "hmpps-person-match-score"
@@ -64,9 +66,10 @@ class MatchScoreFlaskApplication:
         Set up application logger
         """
         # this suppresses app insights logs from stdout
+        logging.Formatter = LogFormatter
         logging.basicConfig(
             level=logging.WARNING,
-            format="%(asctime)s %(levelname)-8s %(message)s",
+            format="%(asctime)s.%(msecs)03d %(levelname)-8s %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
         )
         self.logger = logging.getLogger(self.LOGGER_NAME)
