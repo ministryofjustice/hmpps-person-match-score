@@ -20,7 +20,6 @@ import flask
 from hmpps_person_match_score.views.health_view import HealthView
 from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
-from hmpps_person_match_score.views.ping_view import PingView
 
 
 class MatchScoreFlaskApplication:
@@ -58,7 +57,7 @@ class MatchScoreFlaskApplication:
         Set up request handlers, passes logger to each view
         Each request handler can define ROUTE const as url rule
         """
-        for request_handler in [PingView, HealthView, MatchView, InfoView]:
+        for request_handler in [HealthView, MatchView, InfoView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
                 view_func=request_handler.as_view(request_handler.__name__,
