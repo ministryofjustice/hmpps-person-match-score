@@ -8,7 +8,8 @@ class BaseView(MethodView):
     Include request as part of the object
     """
 
-    def __init__(self, logger) -> None:
+    def __init__(self, logger, duckdb_connection) -> None:
         super().__init__()
         self.logger = logger
+        self.duckdb_connection = duckdb_connection
         self.request = flask.request

@@ -3,6 +3,8 @@ import os
 import platform
 import sys
 
+import duckdb
+
 # Must be imported before flask
 from azure.monitor.opentelemetry import configure_azure_monitor
 
@@ -40,6 +42,7 @@ class MatchScoreFlaskApplication:
         """
         self.initialise_logger()
         self.log_version()
+        self.initiaise_duckdb_connection()
         self.initialise_request_handlers()
 
     def log_version(self):
@@ -58,8 +61,16 @@ class MatchScoreFlaskApplication:
         for request_handler in [PingView, HealthView, MatchView, InfoView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
-                view_func=request_handler.as_view(request_handler.__name__, self.logger),
+                view_func=request_handler.as_view(request_handler.__name__,
+                                                  self.logger,
+                                                  self.duckdb_connection),
             )
+
+    def initiaise_duckdb_connection(self):
+        """
+        Set up duckdb database connection
+        """
+        self.duckdb_connection = duckdb.connect(database=":memory:")
 
     def initialise_logger(self):
         """

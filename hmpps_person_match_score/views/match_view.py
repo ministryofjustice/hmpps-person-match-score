@@ -95,6 +95,7 @@ class MatchView(BaseView):
                 data["source_dataset"].unique()[0],
                 data["source_dataset"].unique()[1],
             ],
+            connection=self.duckdb_connection,
         )
         linker.load_settings_from_json(self.get_model_path())
 
