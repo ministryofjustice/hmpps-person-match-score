@@ -44,7 +44,7 @@ class PersonMatchView(BaseView):
 
     def match(self, person_match_model: PersonMatching):
         """
-        Link records
+        Match records
         """
         pmm_dict = person_match_model.model_dump()
         dataset_1 = pa.Table.from_pylist(pmm_dict["matching_to"], schema=self.SCHEMA)
