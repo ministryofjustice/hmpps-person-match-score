@@ -74,16 +74,6 @@ requests
 | where cloud_RoleName == 'hmpps-person-match-score'
 ```
 
-## TODO - PiC
-
-- app insights custom events
-
-### TODO - Panagiotis
-- change from embedded DB to PySpark
-- unit tests for data science functions
-- change input/output to JSON
-- (later) move to stand-alone Splink
-
 ## Notes
 
 * Ported from a [PoC using AWS Lambda](https://github.com/moj-analytical-services/pic_scoring_prototype_python)
