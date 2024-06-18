@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Annotated, Optional
 
+from annotated_types import Len
 from pydantic import BaseModel
 
 
@@ -30,6 +31,5 @@ class PersonMatching(BaseModel):
     """
     List of people to match
     """
-
     matching_from: MatchingFromPerson
-    matching_to: List[MatchingToPerson]
+    matching_to: Annotated[list[MatchingToPerson], Len(min_length=1, max_length=50)]
