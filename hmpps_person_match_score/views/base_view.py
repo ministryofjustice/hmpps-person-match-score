@@ -30,11 +30,11 @@ class BaseView(MethodView):
             raise BadRequest("Message in incorrect format") from err
 
     @staticmethod
-    def get_model_path(model_name: SplinkModels):
+    def get_model_path(model: SplinkModels):
         """
         Get model path from environment variable
         """
-        model_path = os.environ.get("MODEL_PATH", f"./hmpps_person_match_score/splink_models/{model_name.value}.json")
+        model_path = f"./hmpps_person_match_score/splink_models/{model.value}.json"
         if not os.path.exists(model_path):
-            raise Exception(f"MODEL_PATH {model_path} does not exist.")
+            raise Exception(f"{model_path} does not exist.")
         return model_path
