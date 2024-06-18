@@ -1601,13 +1601,13 @@ files = [
 
 [[package]]
 name = "splink"
-version = "3.9.14"
+version = "3.9.15"
 description = "Fast probabilistic data linkage at scale"
 optional = false
 python-versions = "<4.0.0,>=3.8.0"
 files = [
-    {file = "splink-3.9.14-py3-none-any.whl", hash = "sha256:3787356bdf560066dbc0904d947fa1c02a1f16b20407ea05d1ad6236169e54aa"},
-    {file = "splink-3.9.14.tar.gz", hash = "sha256:c86316547cad4996c1fa4f1bfd98b1c476de31cfc5aff4faae2173bb2ec0f27b"},
+    {file = "splink-3.9.15-py3-none-any.whl", hash = "sha256:1b8f557743e633c785fa6da4030821d0cd1ccf03336d662db59f809956f4ec87"},
+    {file = "splink-3.9.15.tar.gz", hash = "sha256:d52a4f2e48567b502621924cbd909f88c6cb88b32442d575deb4c16bbbb2ccad"},
 ]
 
 [package.dependencies]
@@ -1816,4 +1816,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "9b6420d468346cecb042b84d90098d6a6536dc0ccaae0a2e444b885be698c489"
+content-hash = "005caaeb12d43b50006c70f406a0cd01ca9de5fd373b883a6fe413d8612dc8e3"
