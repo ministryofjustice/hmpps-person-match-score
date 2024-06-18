@@ -10,14 +10,12 @@ class Person(BaseModel):
     """
 
     unique_id: str
-    pnc: Optional[str] = ""
-    dob: Optional[str] = ""
-    lastname: Optional[str] = ""
-    firstname1: Optional[str] = ""
-    firstname2: Optional[str] = ""
-    firstname3: Optional[str] = ""
-    firstname4: Optional[str] = ""
-    firstname5: Optional[str] = ""
+    pnc: Optional[str] = None
+    dob: Optional[str] = None
+    lastname: Optional[str] = None
+    firstname1: Optional[str] = None
+    firstname2: Optional[str] = None
+    firstname3: Optional[str] = None
 
 
 class MatchingFromPerson(Person):

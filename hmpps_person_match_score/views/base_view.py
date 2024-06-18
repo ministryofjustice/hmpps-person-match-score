@@ -5,6 +5,8 @@ from flask.views import MethodView
 from pydantic import BaseModel, ValidationError
 from werkzeug.exceptions import BadRequest
 
+from hmpps_person_match_score.domain.splink_models import SplinkModels
+
 
 class BaseView(MethodView):
     """
@@ -28,11 +30,11 @@ class BaseView(MethodView):
             raise BadRequest("Message in incorrect format") from err
 
     @staticmethod
-    def get_model_path():
+    def get_model_path(model_name: SplinkModels):
         """
         Get model path from environment variable
         """
-        model_path = os.environ.get("MODEL_PATH", "./hmpps_person_match_score/model.json")
+        model_path = os.environ.get("MODEL_PATH", f"./hmpps_person_match_score/splink_models/{model_name.value}.json")
         if not os.path.exists(model_path):
             raise Exception(f"MODEL_PATH {model_path} does not exist.")
         return model_path

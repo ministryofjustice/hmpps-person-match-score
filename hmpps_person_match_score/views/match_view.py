@@ -5,6 +5,7 @@ import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
 from hmpps_person_match_score.domain.events import Events
+from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.utils import standardisation_functions
 from hmpps_person_match_score.views.base_view import BaseView
 
@@ -96,7 +97,7 @@ class MatchView(BaseView):
             ],
             connection=self.duckdb_connection,
         )
-        linker.load_settings(self.get_model_path())
+        linker.load_settings(self.get_model_path(SplinkModels.MODEL))
 
         # Make predictions
         json_output = linker.predict().as_pandas_dataframe().to_json()

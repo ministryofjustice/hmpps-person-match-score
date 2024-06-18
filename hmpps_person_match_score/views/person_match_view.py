@@ -3,6 +3,7 @@ import json
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
+from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.models.person_match_model import PersonMatching
 from hmpps_person_match_score.views.base_view import BaseView
 
@@ -16,6 +17,7 @@ class PersonMatchView(BaseView):
 
     SCHEMA = pa.schema(
         [
+            pa.field("unique_id", pa.string(), nullable=True),
             pa.field("source_dataset", pa.string(), nullable=False),
             pa.field("pnc", pa.string(), nullable=True),
             pa.field("dob", pa.string(), nullable=True),
@@ -23,8 +25,6 @@ class PersonMatchView(BaseView):
             pa.field("firstname1", pa.string(), nullable=True),
             pa.field("firstname2", pa.string(), nullable=True),
             pa.field("firstname3", pa.string(), nullable=True),
-            pa.field("firstname4", pa.string(), nullable=True),
-            pa.field("firstname5", pa.string(), nullable=True),
         ],
     )
 
@@ -47,7 +47,7 @@ class PersonMatchView(BaseView):
             [dataset_1, dataset_2],
             connection=self.duckdb_connection,
         )
-        linker.load_settings(self.get_model_path())
+        linker.load_settings(self.get_model_path(SplinkModels.PERSON_MATCH_MODEL))
 
         json_output = linker.predict().as_pandas_dataframe().to_json()
 
