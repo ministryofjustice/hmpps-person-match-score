@@ -37,7 +37,7 @@ class MatchView(BaseView):
         POST request handler
         """
         try:
-            self.logger.info("Match score requested")
+            self.logger.info(Events.MATCH_SCORE_REQUESTED)
 
             data = pd.DataFrame(json.loads(self.request.get_data().decode("utf-8")))
 

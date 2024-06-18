@@ -3,6 +3,7 @@ import json
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
+from hmpps_person_match_score.domain.events import Events
 from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.models.person_match_model import PersonMatching
 from hmpps_person_match_score.views.base_view import BaseView
@@ -32,9 +33,14 @@ class PersonMatchView(BaseView):
         """
         POST request handler
         """
+        self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
         person_match_model = self.validate(model=PersonMatching)
-        response = self.match(person_match_model)
-        return response
+        result = self.match(person_match_model)
+        self.logger.info(
+            Events.PERSON_MATCH_SCORE_GENERATED,
+            extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
+        )
+        return result
 
     def match(self, person_match_model: PersonMatching):
         """
