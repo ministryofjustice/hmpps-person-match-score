@@ -12,6 +12,7 @@ class TestPersonMatchView:
     def test_context(self):
         self.valid_sample = {
             "matching_from": {
+                "unique_id": "1",
                 "firstname1": "Lily",
                 "lastname": "Robibnson",
                 "dob": "2009-07-06",
@@ -19,6 +20,7 @@ class TestPersonMatchView:
             },
             "matching_to": [
                 {
+                    "unique_id": "2",
                     "firstname1": "Lily",
                     "surname": "Robibnson",
                     "dob": "2009-07-06",
@@ -34,12 +36,14 @@ class TestPersonMatchView:
     def test_complete_message_multiple_records(self, client):
         multiple_records = [
             {
+                "unique_id": f"{i}",
                 "firstname1": "Lily",
                 "surname": "Robibnson",
                 "dob": "2009-07-06",
                 "pnc": "2001/0141640Y",
             }
-        ] * 10
+            for i in range(2, 20)
+        ]
         self.valid_sample["matching_to"] = multiple_records
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 200

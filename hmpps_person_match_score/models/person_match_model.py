@@ -9,6 +9,7 @@ class Person(BaseModel):
     Pydantic Person Model
     """
 
+    unique_id: str
     pnc: Optional[str] = ""
     dob: Optional[str] = ""
     lastname: Optional[str] = ""
@@ -31,5 +32,6 @@ class PersonMatching(BaseModel):
     """
     List of people to match
     """
+
     matching_from: MatchingFromPerson
     matching_to: Annotated[list[MatchingToPerson], Len(min_length=1, max_length=50)]

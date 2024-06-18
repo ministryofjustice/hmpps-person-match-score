@@ -14,8 +14,8 @@ class TestPersonMatchModel:
         Test model populates the source dataset property accordingly
         """
         person_match_model = PersonMatching(
-            matching_from=MatchingFromPerson(pnc="1234567890"),
-            matching_to=[MatchingToPerson(pnc="1234567890")],
+            matching_from=MatchingFromPerson(unique_id="1", pnc="1234567890"),
+            matching_to=[MatchingToPerson(unique_id="2", pnc="1234567890")],
         )
         assert person_match_model.matching_from.source_dataset == "matching_from"
         assert person_match_model.matching_to[0].source_dataset == "matching_to"
@@ -25,8 +25,8 @@ class TestPersonMatchModel:
         Test model allows multiple records
         """
         person_match_model = PersonMatching(
-            matching_from=MatchingFromPerson(pnc="1234567890"),
-            matching_to=[MatchingToPerson(pnc="1234567890")] * 20,
+            matching_from=MatchingFromPerson(unique_id="1", pnc="1234567890"),
+            matching_to=[MatchingToPerson(unique_id="2", pnc="1234567890")] * 20,
         )
         assert len(person_match_model.matching_to) == 20
 
@@ -34,8 +34,24 @@ class TestPersonMatchModel:
         """
         Test model doesnt allow more than 50 records
         """
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError) as err:
+            PersonMatching(
+                matching_from=MatchingFromPerson(unique_id="1", pnc="1234567890"),
+                matching_to=[MatchingToPerson(unique_id="2", pnc="1234567890")] * 51,
+            )
+        assert err.value.error_count() == 1
+        assert err.value.errors()[0].get("loc") == ("matching_to",)
+        assert err.value.errors()[0].get("msg") == "List should have at most 50 items after validation, not 51"
+
+    def test_model_requires_unique_id(self):
+        """
+        Test model requires unique_id
+        """
+        with pytest.raises(ValidationError) as err:
             PersonMatching(
                 matching_from=MatchingFromPerson(pnc="1234567890"),
                 matching_to=[MatchingToPerson(pnc="1234567890")] * 51,
             )
+        assert err.value.error_count() == 1
+        assert err.value.errors()[0].get("loc") == ("unique_id",)
+        assert err.value.errors()[0].get("msg") == "Field required"
