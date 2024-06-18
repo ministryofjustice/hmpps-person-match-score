@@ -32,12 +32,14 @@ class TestPersonMatchView:
         assert response.status_code == 200
 
     def test_complete_message_multiple_records(self, client):
-        multiple_records = [{
-            "firstname1": "Lily",
-            "surname": "Robibnson",
-            "dob": "2009-07-06",
-            "pnc": "2001/0141640Y",
-        }] * 10
+        multiple_records = [
+            {
+                "firstname1": "Lily",
+                "surname": "Robibnson",
+                "dob": "2009-07-06",
+                "pnc": "2001/0141640Y",
+            }
+        ] * 10
         self.valid_sample["matching_to"] = multiple_records
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 200
@@ -61,4 +63,3 @@ class TestPersonMatchView:
         }
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 400
-

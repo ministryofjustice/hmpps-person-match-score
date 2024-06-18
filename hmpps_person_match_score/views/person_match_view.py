@@ -36,7 +36,6 @@ class PersonMatchView(BaseView):
         response = self.match(person_match_model)
         return response
 
-
     def match(self, person_match_model: PersonMatching):
         """
         Link records
@@ -53,4 +52,3 @@ class PersonMatchView(BaseView):
         json_output = linker.predict().as_pandas_dataframe().to_json()
 
         return json.loads(json_output)
-

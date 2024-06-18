@@ -22,6 +22,7 @@ from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
 from hmpps_person_match_score.views.person_match_view import PersonMatchView
 
+
 class MatchScoreFlaskApplication:
     """
     Match Score Flask Application
@@ -60,9 +61,7 @@ class MatchScoreFlaskApplication:
         for request_handler in [HealthView, MatchView, InfoView, PersonMatchView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
-                view_func=request_handler.as_view(request_handler.__name__,
-                                                  self.logger,
-                                                  self.duckdb_connection),
+                view_func=request_handler.as_view(request_handler.__name__, self.logger, self.duckdb_connection),
             )
 
     def initiaise_duckdb_connection(self):
