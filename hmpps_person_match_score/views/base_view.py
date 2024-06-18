@@ -1,5 +1,7 @@
 import flask
 from flask.views import MethodView
+from pydantic import BaseModel, ValidationError
+from werkzeug.exceptions import BadRequest
 
 
 class BaseView(MethodView):
@@ -13,3 +15,12 @@ class BaseView(MethodView):
         self.logger = logger
         self.duckdb_connection = duckdb_connection
         self.request = flask.request
+
+    def validate(self, model: BaseModel):
+        """
+        validate incoming message
+        """
+        try:
+            return model(**self.request.json)
+        except ValidationError as err:
+            raise BadRequest("Message in incorrect format") from err

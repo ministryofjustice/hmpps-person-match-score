@@ -97,7 +97,7 @@ class MatchView(BaseView):
             ],
             connection=self.duckdb_connection,
         )
-        linker.load_settings_from_json(self.get_model_path())
+        linker.load_settings(self.get_model_path())
 
         # Make predictions
         json_output = linker.predict().as_pandas_dataframe().to_json()
