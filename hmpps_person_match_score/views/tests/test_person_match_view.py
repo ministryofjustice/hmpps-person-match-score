@@ -12,22 +12,33 @@ class TestPersonMatchView:
     def test_context(self):
         self.valid_sample = {
             "matching_from": {
-                "first_name": "Lily",
-                "surname": "Robinson",
+                "firstname1": "Lily",
+                "lastname": "Robibnson",
                 "dob": "2009-07-06",
-                "pnc_number": "2001/0141640Y",
+                "pnc": "2001/0141640Y",
             },
             "matching_to": [
                 {
-                    "first_name": "Lily",
-                    "surname": "Robinson",
+                    "firstname1": "Lily",
+                    "surname": "Robibnson",
                     "dob": "2009-07-06",
-                    "pnc_number": "2001/0141640Y",
+                    "pnc": "2001/0141640Y",
                 },
             ],
         }
 
-    def test_validation_complete_message(self, client):
+    def test_complete_message(self, client):
+        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        assert response.status_code == 200
+
+    def test_complete_message_multiple_records(self, client):
+        multiple_records = [{
+            "firstname1": "Lily",
+            "surname": "Robibnson",
+            "dob": "2009-07-06",
+            "pnc": "2001/0141640Y",
+        }] * 10
+        self.valid_sample["matching_to"] = multiple_records
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 200
 

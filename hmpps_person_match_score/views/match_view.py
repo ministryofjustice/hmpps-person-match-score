@@ -1,5 +1,4 @@
 import json
-import os
 
 import pandas as pd
 import pyarrow as pa
@@ -104,13 +103,3 @@ class MatchView(BaseView):
 
         # Return
         return json.loads(json_output)
-
-    @staticmethod
-    def get_model_path():
-        """
-        Get model path from environment variable
-        """
-        model_path = os.environ.get("MODEL_PATH", "./hmpps_person_match_score/model.json")
-        if not os.path.exists(model_path):
-            raise Exception(f"MODEL_PATH {model_path} does not exist.")
-        return model_path

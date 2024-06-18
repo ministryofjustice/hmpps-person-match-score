@@ -1,37 +1,10 @@
-from typing import List, Optional
+import json
 
-from pydantic import BaseModel
+import pyarrow as pa
+from splink.duckdb.duckdb_linker import DuckDBLinker
 
+from hmpps_person_match_score.models.person_match_model import PersonMatching
 from hmpps_person_match_score.views.base_view import BaseView
-
-
-class Person(BaseModel):
-    """
-    Pydantic Person Model
-    """
-    pnc: Optional[str] = ""
-    dob: Optional[str] = ""
-    lastname: Optional[str] = ""
-    firstname1: Optional[str] = ""
-    firstname2: Optional[str] = ""
-    firstname3: Optional[str] = ""
-    firstname4: Optional[str] = ""
-    firstname5: Optional[str] = ""
-
-class MatchingFromPerson(Person):
-    source_dataset: str = "matching_from"
-
-
-class MatchingToPerson(Person):
-    source_dataset: str = "matching_to"
-
-
-class PersonMatching(BaseModel):
-    """
-    List of people to match
-    """
-    matching_from: MatchingFromPerson
-    matching_to: List[MatchingToPerson]
 
 
 class PersonMatchView(BaseView):
@@ -41,39 +14,43 @@ class PersonMatchView(BaseView):
 
     ROUTE = "/person/match"
 
+    SCHEMA = pa.schema(
+        [
+            pa.field("source_dataset", pa.string(), nullable=False),
+            pa.field("pnc", pa.string(), nullable=True),
+            pa.field("dob", pa.string(), nullable=True),
+            pa.field("lastname", pa.string(), nullable=True),
+            pa.field("firstname1", pa.string(), nullable=True),
+            pa.field("firstname2", pa.string(), nullable=True),
+            pa.field("firstname3", pa.string(), nullable=True),
+            pa.field("firstname4", pa.string(), nullable=True),
+            pa.field("firstname5", pa.string(), nullable=True),
+        ],
+    )
+
     def post(self):
         """
         POST request handler
         """
-        message = self.validate(model=PersonMatching)
+        person_match_model = self.validate(model=PersonMatching)
+        response = self.match(person_match_model)
+        return response
 
-        return message.model_dump_json()
 
-    def match(self):
+    def match(self, person_match_model: PersonMatching):
         """
         Link records
         """
-        # row_1 = data[data["source_dataset"] == data["source_dataset"].unique()[0]]
-        # row_2 = data[data["source_dataset"] == data["source_dataset"].unique()[1]]
+        pmm_dict = person_match_model.model_dump()
+        dataset_1 = pa.Table.from_pylist(pmm_dict["matching_to"], schema=self.SCHEMA)
+        dataset_2 = pa.Table.from_pylist([pmm_dict["matching_from"]], schema=self.SCHEMA)
+        linker = DuckDBLinker(
+            [dataset_1, dataset_2],
+            connection=self.duckdb_connection,
+        )
+        linker.load_settings(self.get_model_path())
 
-        # # Important to impose explicit schema - otherwise where a column contains only
-        # # None DuckDB will have no way of knowing it's a nullable string column
-        # row_arrow_1 = pa.Table.from_pandas(row_1, schema=self.SCHEMA, preserve_index=False)
-        # row_arrow_2 = pa.Table.from_pandas(row_2, schema=self.SCHEMA, preserve_index=False)
-        # # Set up DuckDB linker
-        # linker = DuckDBLinker(
-        #     [row_arrow_1, row_arrow_2],
-        #     input_table_aliases=[
-        #         data["source_dataset"].unique()[0],
-        #         data["source_dataset"].unique()[1],
-        #     ],
-        #     connection=self.duckdb_connection,
-        # )
-        # linker.load_settings(self.get_model_path())
+        json_output = linker.predict().as_pandas_dataframe().to_json()
 
-        # # Make predictions
-        # json_output = linker.predict().as_pandas_dataframe().to_json()
-
-        # # Return
-        # return json.loads(json_output)
+        return json.loads(json_output)
 
