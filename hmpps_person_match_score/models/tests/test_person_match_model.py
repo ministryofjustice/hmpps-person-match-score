@@ -20,7 +20,7 @@ class TestPersonMatchModel:
         assert person_match_model.matching_from.source_dataset == "matching_from"
         assert person_match_model.matching_to[0].source_dataset == "matching_to"
 
-    def test_model_doesnt_allows_mulitiple_records(self):
+    def test_model_allows_mulitiple_records(self):
         """
         Test model allows multiple records
         """
