@@ -80,8 +80,6 @@ COPY docker-entrypoint.sh wsgi.py /app/
 
 WORKDIR /app/
 
-ENV MODEL_PATH='/app/hmpps_person_match_score/model.json'
-
 # create app user
 RUN groupadd -g 1001 appuser && \
     useradd -u 1001 -g appuser -m -s /bin/bash appuser

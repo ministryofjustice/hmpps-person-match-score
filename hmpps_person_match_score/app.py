@@ -3,6 +3,8 @@ import os
 import platform
 import sys
 
+import duckdb
+
 # Must be imported before flask
 from azure.monitor.opentelemetry import configure_azure_monitor
 
@@ -18,7 +20,7 @@ import flask
 from hmpps_person_match_score.views.health_view import HealthView
 from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
-from hmpps_person_match_score.views.ping_view import PingView
+from hmpps_person_match_score.views.person_match_view import PersonMatchView
 
 
 class MatchScoreFlaskApplication:
@@ -40,6 +42,7 @@ class MatchScoreFlaskApplication:
         """
         self.initialise_logger()
         self.log_version()
+        self.initiaise_duckdb_connection()
         self.initialise_request_handlers()
 
     def log_version(self):
@@ -55,11 +58,17 @@ class MatchScoreFlaskApplication:
         Set up request handlers, passes logger to each view
         Each request handler can define ROUTE const as url rule
         """
-        for request_handler in [PingView, HealthView, MatchView, InfoView]:
+        for request_handler in [HealthView, MatchView, InfoView, PersonMatchView]:
             self.app.add_url_rule(
                 request_handler.ROUTE,
-                view_func=request_handler.as_view(request_handler.__name__, self.logger),
+                view_func=request_handler.as_view(request_handler.__name__, self.logger, self.duckdb_connection),
             )
+
+    def initiaise_duckdb_connection(self):
+        """
+        Set up duckdb database connection
+        """
+        self.duckdb_connection = duckdb.connect(database=":memory:")
 
     def initialise_logger(self):
         """

@@ -1,3 +1,4 @@
+export PYTHONDONTWRITEBYTECODE=1
 
 install:
 	poetry install

@@ -10,3 +10,4 @@ test_results/
 .ruff_cache
 .venv
 .vscode
+.trivy

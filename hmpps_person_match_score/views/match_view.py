@@ -1,11 +1,11 @@
 import json
-import os
 
 import pandas as pd
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
 
 from hmpps_person_match_score.domain.events import Events
+from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.utils import standardisation_functions
 from hmpps_person_match_score.views.base_view import BaseView
 
@@ -37,7 +37,7 @@ class MatchView(BaseView):
         POST request handler
         """
         try:
-            self.logger.info("Match score requested")
+            self.logger.info(Events.MATCH_SCORE_REQUESTED)
 
             data = pd.DataFrame(json.loads(self.request.get_data().decode("utf-8")))
 
@@ -95,21 +95,12 @@ class MatchView(BaseView):
                 data["source_dataset"].unique()[0],
                 data["source_dataset"].unique()[1],
             ],
+            connection=self.duckdb_connection,
         )
-        linker.load_settings_from_json(self.get_model_path())
+        linker.load_settings(self.get_model_path(SplinkModels.MODEL))
 
         # Make predictions
         json_output = linker.predict().as_pandas_dataframe().to_json()
 
         # Return
         return json.loads(json_output)
-
-    @staticmethod
-    def get_model_path():
-        """
-        Get model path from environment variable
-        """
-        model_path = os.environ.get("MODEL_PATH", "./hmpps_person_match_score/model.json")
-        if not os.path.exists(model_path):
-            raise Exception(f"MODEL_PATH {model_path} does not exist.")
-        return model_path
