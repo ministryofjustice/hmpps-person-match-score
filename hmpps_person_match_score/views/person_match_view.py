@@ -55,6 +55,11 @@ class PersonMatchView(BaseView):
         )
         linker.load_settings(self.get_model_path(SplinkModels.PERSON_MATCH_MODEL))
 
-        json_output = linker.predict().as_pandas_dataframe().to_json()
+        prediction = linker.predict()
+
+        json_output = prediction.as_pandas_dataframe().to_json()
+
+        # Clean up prediction table from database
+        linker._delete_table_from_database(prediction.physical_name)
 
         return json.loads(json_output)
