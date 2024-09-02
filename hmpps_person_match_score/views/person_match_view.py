@@ -59,7 +59,7 @@ class PersonMatchView(BaseView):
 
         json_output = prediction.as_pandas_dataframe().to_json()
 
-        # Clean up prediction table from database
+        # manually clean up prediction table from db to avoid OOM, see PR 163
         linker._delete_table_from_database(prediction.physical_name)
 
         return json.loads(json_output)
