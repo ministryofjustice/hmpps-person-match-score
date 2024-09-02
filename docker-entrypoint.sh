@@ -9,5 +9,4 @@ exec gunicorn \
     wsgi:app \
     --workers 4 \
     --timeout 120 \
-    --worker-class gevent \
-    --worker-connections 1000
+    --worker-class gevent
