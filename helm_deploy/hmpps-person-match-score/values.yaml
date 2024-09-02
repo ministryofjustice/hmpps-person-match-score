@@ -9,8 +9,6 @@ generic-service:
     port: 5000
 
   ingress:
-    v0_47_enabled: false
-    v1_2_enabled: true
     enabled: true
     host: app-hostname.local # override per environment
     path: /
@@ -18,9 +16,17 @@ generic-service:
   livenessProbe:
     httpGet:
       path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 10
   readinessProbe:
     httpGet:
       path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 10
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   namespace_secrets:
