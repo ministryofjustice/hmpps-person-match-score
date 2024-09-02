@@ -99,8 +99,11 @@ class MatchView(BaseView):
         )
         linker.load_settings(self.get_model_path(SplinkModels.MODEL))
 
-        # Make predictions
-        json_output = linker.predict().as_pandas_dataframe().to_json()
+        prediction = linker.predict()
 
-        # Return
+        json_output = prediction.as_pandas_dataframe().to_json()
+
+        # manually clean up prediction table from db to avoid OOM, see PR 163
+        linker._delete_table_from_database(prediction.physical_name)  # noqa: SLF001
+
         return json.loads(json_output)
