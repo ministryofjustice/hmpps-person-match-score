@@ -1,4 +1,9 @@
+import uuid
 from typing import List
+
+
+def generate_view_uuid():
+    return f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
 
 
 def cleanup_splink_tables(linker, connection, input_table_alias: List[str]):

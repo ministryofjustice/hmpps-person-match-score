@@ -1,5 +1,4 @@
 import json
-import uuid
 
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
@@ -7,7 +6,7 @@ from splink.duckdb.duckdb_linker import DuckDBLinker
 from hmpps_person_match_score.domain.events import Events
 from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.models.person_match_model import PersonMatching
-from hmpps_person_match_score.utils.db_cleanup import cleanup_splink_tables
+from hmpps_person_match_score.utils.db_cleanup import cleanup_splink_tables, generate_view_uuid
 from hmpps_person_match_score.views.base_view import BaseView
 
 
@@ -52,8 +51,8 @@ class PersonMatchView(BaseView):
         dataset_1 = pa.Table.from_pylist(pmm_dict["matching_to"], schema=self.SCHEMA)
         dataset_2 = pa.Table.from_pylist([pmm_dict["matching_from"]], schema=self.SCHEMA)
 
-        view_uuid_1 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
-        view_uuid_2 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
+        view_uuid_1 = generate_view_uuid()
+        view_uuid_2 = generate_view_uuid()
 
         linker = DuckDBLinker(
             [dataset_1, dataset_2],
