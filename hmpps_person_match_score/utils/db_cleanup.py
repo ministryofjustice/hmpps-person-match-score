@@ -1,13 +1,9 @@
-def cleanup_splink_tables(linker, connection, input_table_alias):
+from typing import List
+
+
+def cleanup_splink_tables(linker, connection, input_table_alias: List[str]):
     """
-    Cleans up intermediate tables created by Splink in the DuckDB connection.
-
-    Args:
-    linker (DuckDBLinker): The Splink linker object.
-    connection (duckdb.DuckDBPyConnection): The DuckDB connection.
-
-    Returns:
-    None
+    Cleans up intermediate tables created by Splink in the DuckDB connection
     """
 
     table_prefixes = ("__splink__df_concat_with_tf_", "__splink__df_predict_")
@@ -16,5 +12,5 @@ def cleanup_splink_tables(linker, connection, input_table_alias):
         if k.startswith(table_prefixes):
             v.drop_table_from_database_and_remove_from_cache()
 
-    input_table_alias = linker.input_table_aliases[0]
-    connection.sql(f"DROP VIEW IF EXISTS {input_table_alias}")
+    for alias in input_table_alias:
+        connection.sql(f"DROP VIEW IF EXISTS {alias}")

@@ -1,4 +1,5 @@
 import json
+import uuid
 
 import pandas as pd
 import pyarrow as pa
@@ -89,12 +90,15 @@ class MatchView(BaseView):
         # None DuckDB will have no way of knowing it's a nullable string column
         row_arrow_1 = pa.Table.from_pandas(row_1, schema=self.SCHEMA, preserve_index=False)
         row_arrow_2 = pa.Table.from_pandas(row_2, schema=self.SCHEMA, preserve_index=False)
-        # Set up DuckDB linker
+
+        view_uuid_1 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
+        view_uuid_2 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
+
         linker = DuckDBLinker(
             [row_arrow_1, row_arrow_2],
             input_table_aliases=[
-                data["source_dataset"].unique()[0],
-                data["source_dataset"].unique()[1],
+                view_uuid_1,
+                view_uuid_2,
             ],
             connection=self.duckdb_connection,
         )
@@ -105,6 +109,6 @@ class MatchView(BaseView):
         json_output = prediction.as_pandas_dataframe().to_json()
 
         # Clean up Splink tables to avoid OOM, see PR 163
-        cleanup_splink_tables(linker, self.duckdb_connection)
+        cleanup_splink_tables(linker, self.duckdb_connection, [view_uuid_1, view_uuid_2])
 
         return json.loads(json_output)

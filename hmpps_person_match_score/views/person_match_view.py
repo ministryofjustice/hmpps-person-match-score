@@ -1,4 +1,5 @@
 import json
+import uuid
 
 import pyarrow as pa
 from splink.duckdb.duckdb_linker import DuckDBLinker
@@ -50,8 +51,16 @@ class PersonMatchView(BaseView):
         pmm_dict = person_match_model.model_dump()
         dataset_1 = pa.Table.from_pylist(pmm_dict["matching_to"], schema=self.SCHEMA)
         dataset_2 = pa.Table.from_pylist([pmm_dict["matching_from"]], schema=self.SCHEMA)
+
+        view_uuid_1 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
+        view_uuid_2 = f"v_{uuid.uuid4().hex.replace('-', '')[:16]}"
+
         linker = DuckDBLinker(
             [dataset_1, dataset_2],
+            input_table_aliases=[
+                view_uuid_1,
+                view_uuid_2,
+            ],
             connection=self.duckdb_connection,
         )
         linker.load_settings(self.get_model_path(SplinkModels.PERSON_MATCH_MODEL))
@@ -61,6 +70,6 @@ class PersonMatchView(BaseView):
         json_output = prediction.as_pandas_dataframe().to_json()
 
         # Clean up Splink tables to avoid OOM, see PR 163
-        cleanup_splink_tables(linker, self.duckdb_connection)
+        cleanup_splink_tables(linker, self.duckdb_connection, [view_uuid_1, view_uuid_2])
 
         return json.loads(json_output)
