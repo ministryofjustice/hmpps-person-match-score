@@ -6,6 +6,7 @@ from splink.duckdb.duckdb_linker import DuckDBLinker
 from hmpps_person_match_score.domain.events import Events
 from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.models.person_match_model import PersonMatching
+from hmpps_person_match_score.utils.db_cleanup import cleanup_splink_tables
 from hmpps_person_match_score.views.base_view import BaseView
 
 
@@ -59,7 +60,7 @@ class PersonMatchView(BaseView):
 
         json_output = prediction.as_pandas_dataframe().to_json()
 
-        # manually clean up prediction table from db to avoid OOM, see PR 163
-        linker._delete_table_from_database(prediction.physical_name) # noqa: SLF001
+        # Clean up Splink tables to avoid OOM, see PR 163
+        cleanup_splink_tables(linker, self.duckdb_connection)
 
         return json.loads(json_output)
