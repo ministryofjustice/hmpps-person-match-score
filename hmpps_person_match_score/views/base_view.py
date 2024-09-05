@@ -2,6 +2,7 @@ import os
 import uuid
 from typing import List
 
+import duckdb
 import flask
 from flask.views import MethodView
 from pydantic import BaseModel, ValidationError
@@ -16,11 +17,14 @@ class BaseView(MethodView):
     Include request as part of the object
     """
 
-    def __init__(self, logger, duckdb_connection) -> None:
+    def __init__(self, logger) -> None:
         super().__init__()
+        self.duckdb_connection = duckdb.connect(database="person-match-score.duckdb")
         self.logger = logger
-        self.duckdb_connection = duckdb_connection
         self.request = flask.request
+
+    def __del__(self):
+        self.duckdb_connection.close()
 
     def validate(self, model: BaseModel):
         """
