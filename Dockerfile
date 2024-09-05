@@ -15,8 +15,6 @@ RUN apt-get update \
 
 # Update pip
 RUN pip install --upgrade pip
-RUN pip freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U 
-
 
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
