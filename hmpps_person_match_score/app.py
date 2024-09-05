@@ -68,7 +68,7 @@ class MatchScoreFlaskApplication:
         """
         Set up duckdb database connection
         """
-        self.duckdb_connection = duckdb.connect(database=":memory:")
+        self.duckdb_connection = duckdb.connect(database="person-match-score.duckdb")
         self.duckdb_connection.execute("SET temp_directory='/tmp/duckdb/';")
 
     def initialise_logger(self):

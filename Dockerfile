@@ -15,8 +15,6 @@ RUN apt-get update \
 
 # Update pip
 RUN pip install --upgrade pip
-RUN pip freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U 
-
 
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
@@ -83,6 +81,8 @@ WORKDIR /app/
 # create app user
 RUN groupadd -g 1001 appuser && \
     useradd -u 1001 -g appuser -m -s /bin/bash appuser
+
+RUN chown appuser:appuser /app/
 USER 1001
 
 EXPOSE 5000
