@@ -55,6 +55,10 @@ class PersonMatchView(BaseView):
 
         linker = DuckDBLinker(
             [dataset_1, dataset_2],
+            input_table_aliases=[
+                view_uuid_1,
+                view_uuid_2,
+            ],
             connection=self.duckdb_connection,
         )
         linker.load_settings(self.get_model_path(SplinkModels.PERSON_MATCH_MODEL))
