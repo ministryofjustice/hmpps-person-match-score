@@ -20,6 +20,7 @@ generic-service:
     periodSeconds: 10
     timeoutSeconds: 10
     failureThreshold: 10
+
   readinessProbe:
     httpGet:
       path: /health

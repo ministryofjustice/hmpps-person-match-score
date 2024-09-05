@@ -2,6 +2,7 @@ import logging
 import os
 import platform
 import sys
+import tracemalloc
 
 import duckdb
 
@@ -22,6 +23,9 @@ from hmpps_person_match_score.views.info_view import InfoView
 from hmpps_person_match_score.views.match_view import MatchView
 from hmpps_person_match_score.views.person_match_view import PersonMatchView
 
+tracemalloc.start()
+
+s = None
 
 class MatchScoreFlaskApplication:
     """
@@ -53,6 +57,18 @@ class MatchScoreFlaskApplication:
         log_message = f"Starting hmpps-person-match-score using Python {version} on {platform.platform()}"
         self.logger.info(log_message)
 
+    def mem_snapshot(self):
+        global s  # noqa: PLW0603
+        if not s:
+            s = tracemalloc.take_snapshot()
+            return "Taken snapshot\n"
+        else:
+            lines = []
+            top_stats = tracemalloc.take_snapshot().compare_to(s, "lineno")
+            for stat in top_stats[:5]:
+                lines.append(str(stat))
+            return "\n".join(lines)
+
     def initialise_request_handlers(self):
         """
         Set up request handlers, passes logger to each view
@@ -63,6 +79,7 @@ class MatchScoreFlaskApplication:
                 request_handler.ROUTE,
                 view_func=request_handler.as_view(request_handler.__name__, self.logger, self.duckdb_connection),
             )
+        self.app.add_url_rule("/snapshot", view_func=self.mem_snapshot)
 
     def initiaise_duckdb_connection(self):
         """
@@ -70,6 +87,7 @@ class MatchScoreFlaskApplication:
         """
         self.duckdb_connection = duckdb.connect(database=":memory:")
         self.duckdb_connection.execute("SET temp_directory='/tmp/duckdb/';")
+        self.duckdb_connection.execute("SET max_memory='800MiB';")
 
     def initialise_logger(self):
         """
