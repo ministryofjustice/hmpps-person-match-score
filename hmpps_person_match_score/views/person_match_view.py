@@ -50,9 +50,6 @@ class PersonMatchView(BaseView):
         dataset_1 = pa.Table.from_pylist(pmm_dict["matching_to"], schema=self.SCHEMA)
         dataset_2 = pa.Table.from_pylist([pmm_dict["matching_from"]], schema=self.SCHEMA)
 
-        view_uuid_1 = self.generate_view_uuid()
-        view_uuid_2 = self.generate_view_uuid()
-
         db_api = DuckDBAPI(connection=self.duckdb_connection)
 
         path_to_settings = self.get_model_path(SplinkModels.PERSON_MATCH_MODEL)
@@ -60,18 +57,11 @@ class PersonMatchView(BaseView):
         linker = Linker(
             [dataset_1, dataset_2],
             path_to_settings,
-            input_table_aliases=[
-                view_uuid_1,
-                view_uuid_2,
-            ],
             db_api=db_api,
         )
 
         prediction = linker.inference.predict()
 
         json_output = prediction.as_pandas_dataframe().to_json()
-
-        # Clean up Splink tables to avoid OOM, see PR 163
-        self.cleanup_splink_tables(linker, [view_uuid_1, view_uuid_2])
 
         return json.loads(json_output)
