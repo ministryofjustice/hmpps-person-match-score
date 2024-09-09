@@ -89,27 +89,17 @@ class MatchView(BaseView):
         row_arrow_1 = pa.Table.from_pandas(row_1, schema=self.SCHEMA, preserve_index=False)
         row_arrow_2 = pa.Table.from_pandas(row_2, schema=self.SCHEMA, preserve_index=False)
 
-        view_uuid_1 = self.generate_view_uuid()
-        view_uuid_2 = self.generate_view_uuid()
-
         db_api = DuckDBAPI(connection=self.duckdb_connection)
 
         path_to_settings = self.get_model_path(SplinkModels.MODEL)
         linker = Linker(
             [row_arrow_1, row_arrow_2],
             path_to_settings,
-            input_table_aliases=[
-                view_uuid_1,
-                view_uuid_2,
-            ],
             db_api=db_api,
         )
 
         prediction = linker.inference.predict()
 
         json_output = prediction.as_pandas_dataframe().to_json()
-
-        # Clean up Splink tables to avoid OOM, see PR 163
-        self.cleanup_splink_tables(linker, [view_uuid_1, view_uuid_2])
 
         return json.loads(json_output)
