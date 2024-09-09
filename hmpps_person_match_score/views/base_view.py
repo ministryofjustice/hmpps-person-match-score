@@ -19,7 +19,7 @@ class BaseView(MethodView):
 
     def __init__(self, logger) -> None:
         super().__init__()
-        self.duckdb_connection = duckdb.connect(database="person-match-score.duckdb")
+        self.duckdb_connection = duckdb.connect(database=":memory:")
         self.logger = logger
         self.request = flask.request
 

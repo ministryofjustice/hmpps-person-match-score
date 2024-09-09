@@ -8,4 +8,5 @@ exec gunicorn \
     --forwarded-allow-ips='*' \
     wsgi:app \
     --timeout 120 \
+    --workers 4 \
     --worker-class gevent
