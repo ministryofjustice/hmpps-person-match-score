@@ -55,7 +55,7 @@ class PersonMatchView(BaseView):
 
         db_api = DuckDBAPI(connection=self.duckdb_connection)
 
-        path_to_settings = self.get_model_path(SplinkModels.MODEL)
+        path_to_settings = self.get_model_path(SplinkModels.PERSON_MATCH_MODEL)
 
         linker = Linker(
             [dataset_1, dataset_2],
