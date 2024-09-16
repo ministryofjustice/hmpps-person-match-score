@@ -2,6 +2,7 @@ import json
 
 import pyarrow as pa
 from splink import DuckDBAPI, Linker
+from werkzeug import exceptions
 
 from hmpps_person_match_score.domain.events import Events
 from hmpps_person_match_score.domain.splink_models import SplinkModels
@@ -33,14 +34,20 @@ class PersonMatchView(BaseView):
         """
         POST request handler
         """
-        self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
-        person_match_model = self.validate(model=PersonMatching)
-        result = self.match(person_match_model)
-        self.logger.info(
-            Events.PERSON_MATCH_SCORE_GENERATED,
-            extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
-        )
-        return result
+        try:
+            self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
+            person_match_model = self.validate(model=PersonMatching)
+            result = self.match(person_match_model)
+            self.logger.info(
+                Events.PERSON_MATCH_SCORE_GENERATED,
+                extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
+            )
+            return result
+        except exceptions.BadRequest as e:
+            return str(e), 400
+        except Exception as e:
+            self.logger.exception(f"{__name__}: Exception at match endpoint")  # noqa: G004
+            return e.args[0], 500
 
     def match(self, person_match_model: PersonMatching):
         """
