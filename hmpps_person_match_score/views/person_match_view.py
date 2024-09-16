@@ -46,7 +46,7 @@ class PersonMatchView(BaseView):
         except exceptions.BadRequest as e:
             return str(e), 400
         except Exception as e:
-            self.logger.exception("Exception at match endpoint")
+            self.logger.exception(f"{__name__}: Exception at match endpoint")  # noqa: G004
             return e.args[0], 500
 
     def match(self, person_match_model: PersonMatching):
