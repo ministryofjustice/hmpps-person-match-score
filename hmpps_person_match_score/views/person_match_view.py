@@ -33,14 +33,18 @@ class PersonMatchView(BaseView):
         """
         POST request handler
         """
-        self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
-        person_match_model = self.validate(model=PersonMatching)
-        result = self.match(person_match_model)
-        self.logger.info(
-            Events.PERSON_MATCH_SCORE_GENERATED,
-            extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
-        )
-        return result
+        try:
+            self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
+            person_match_model = self.validate(model=PersonMatching)
+            result = self.match(person_match_model)
+            self.logger.info(
+                Events.PERSON_MATCH_SCORE_GENERATED,
+                extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
+            )
+            return result
+        except Exception as e:
+            self.logger.exception("Exception at match endpoint")
+            return e.args[0], 500
 
     def match(self, person_match_model: PersonMatching):
         """
