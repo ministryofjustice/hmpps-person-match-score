@@ -2,6 +2,7 @@ import json
 
 import pyarrow as pa
 from splink import DuckDBAPI, Linker
+from werkzeug import exceptions
 
 from hmpps_person_match_score.domain.events import Events
 from hmpps_person_match_score.domain.splink_models import SplinkModels
@@ -42,6 +43,8 @@ class PersonMatchView(BaseView):
                 extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
             )
             return result
+        except exceptions.BadRequest as e:
+            return str(e), 400
         except Exception as e:
             self.logger.exception("Exception at match endpoint")
             return e.args[0], 500
