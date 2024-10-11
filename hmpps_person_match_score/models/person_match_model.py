@@ -32,4 +32,4 @@ class PersonMatching(BaseModel):
     """
 
     matching_from: MatchingFromPerson
-    matching_to: Annotated[list[MatchingToPerson], Len(min_length=1, max_length=50)]
+    matching_to: Annotated[list[MatchingToPerson], Len(min_length=1, max_length=100)]

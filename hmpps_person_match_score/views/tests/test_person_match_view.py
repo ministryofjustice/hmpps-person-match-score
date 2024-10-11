@@ -120,12 +120,12 @@ class TestPersonMatchView:
                 "dob": "2009-07-06",
                 "pnc": None,
             }
-            for i in range(1, 20)
+            for i in range(1, 100)
         ]
         self.valid_sample["matching_to"] = multiple_records
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 200
-        assert len(response.json["match_probability"]) == 19
+        assert len(response.json["match_probability"]) == 99
         assert all([x == 0.999353426 for x in response.json["match_probability"].values()])
 
     def test_validation_error_no_matching_to(self, client):
