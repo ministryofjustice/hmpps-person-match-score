@@ -16,7 +16,6 @@ jinja2 = "*"
 jsonschema = ">=3.0"
 narwhals = ">=1.5.2"
 packaging = "*"
-typing-extensions = {version = ">=4.10.0", markers = "python_version < \"3.13\""}
 
 [package.extras]
 all = ["altair-tiles (>=0.3.0)", "anywidget (>=0.9.0)", "numpy", "pandas (>=0.25.3)", "pyarrow (>=11)", "vega-datasets (>=0.9.0)", "vegafusion[embed] (>=1.6.6)", "vl-convert-python (>=1.6.0)"]
@@ -1521,7 +1520,7 @@ files = [
 [package.dependencies]
 annotated-types = ">=0.6.0"
 pydantic-core = "2.23.4"
-typing-extensions = {version = ">=4.6.1", markers = "python_version < \"3.13\""}
+typing-extensions = {version = ">=4.12.2", markers = "python_version >= \"3.13\""}
 
 [package.extras]
 email = ["email-validator (>=2.0.0)"]
@@ -2175,5 +2174,5 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.12,<3.13"
-content-hash = "36d5ada03177ee4a18f84c4fe1e4ce23a8fd428b8cfb1608513482ece1754f4c"
+python-versions = ">=3.13,<3.14"
+content-hash = "047d88654452b160b3fb1f90452b352b79a1c8c94ca7f9a880bfc6408124bc8e"
