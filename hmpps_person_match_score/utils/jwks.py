@@ -13,6 +13,10 @@ class JWKS:
     """
 
     ALGORITHMS = ["RS256"]
+    TIMEOUT = 300
+
+    def __init__(self):
+        self._jwk_url = self._get_jwk_url()
 
     def get_public_key_from_jwt(self, jwt_token):
         """
@@ -25,7 +29,7 @@ class JWKS:
 
         for jwk in jwks:
             if jwk["kid"] == kid:
-                return JsonWebKey.import_key(jwk)  # Authlib's JsonWebKey helper
+                return JsonWebKey.import_key(jwk)
 
         raise ValueError(f"Public key for: '{kid}' not found.")
 
@@ -40,7 +44,7 @@ class JWKS:
         Get the keys from the JWKS endpoint
         """
         if "keys" not in jwks_cache:
-            response = requests.get(self._get_jwk_url(), timeout=30)
+            response = requests.get(self._jwk_url, timeout=self.TIMEOUT)
             response.raise_for_status()
             jwks_cache["keys"] = response.json()["keys"]
         return jwks_cache["keys"]
