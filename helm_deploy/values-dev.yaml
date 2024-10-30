@@ -9,5 +9,8 @@ generic-service:
     host: hmpps-person-match-score-dev.hmpps.service.justice.gov.uk
     tlsSecretName: hmpps-person-record-dev-cert-secret
 
+  env:
+    OAUTH_BASE_URL: https://sign-in-dev.hmpps.service.justice.gov.uk
+
 generic-prometheus-alerts:
   businessHoursOnly: true
