@@ -37,11 +37,12 @@ class TestJwks:
             JWKS().get_public_key_from_jwt(token)
         assert str(e.value) == "Public key for kid: 'invalid_kid' not found."
 
-    def test_raises_error_on_error_response_from_jwks_endpoint(self, jwt_token_factory, mock_jwks_call_factory):
+    @pytest.mark.parametrize("status_code", [429, 500, 502, 503, 504])
+    def test_raises_error_from_jwks_endpoint(self, status_code, jwt_token_factory, mock_jwks_call_factory):
         """
         Test that an error is raised when the JWKS endpoint returns an error response
         """
-        mock_jwks_call_factory(status_code=500)
+        mock_jwks_call_factory(status_code=status_code)
         token = jwt_token_factory()
         with pytest.raises(requests.exceptions.HTTPError):
             JWKS().get_public_key_from_jwt(token)
