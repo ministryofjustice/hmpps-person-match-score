@@ -14,6 +14,7 @@ def authorize(required_roles: list[str]):
     Returns:
         Callable: Decorated function that requires authorization.
     """
+
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -41,4 +42,5 @@ def authorize(required_roles: list[str]):
                 abort(401, description="Invalid or expired token.")
 
             return decorated_function
+
         return decorator

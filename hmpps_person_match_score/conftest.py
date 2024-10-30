@@ -1,16 +1,28 @@
 import datetime
-import json
 import os
 
 import jwt
 import pytest
 from authlib.jose import JsonWebKey
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture
+def context():
+    """
+    Returns Test context to use through app
+    """
+
+    class TestContext:
+        DEFAULT_KID = "test_kid"
+
+        def __init__(self):
+            self.kid = self.DEFAULT_KID
+
+    return TestContext()
+
+
+@pytest.fixture(autouse=True)
 def set_env_vars():
     os.environ["APP_BUILD_NUMBER"] = "number"
     os.environ["APP_GIT_REF"] = "ref"
@@ -19,54 +31,53 @@ def set_env_vars():
 
 
 @pytest.fixture
-def private_key_credentails():
+def private_key():
     """
     Returns a generated private key for testing purposes.
     """
     private_key = rsa.generate_private_key(
         public_exponent=65537,
         key_size=2048,
-        backend=default_backend()
     )
-    private_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.TraditionalOpenSSL,
-        encryption_algorithm=serialization.NoEncryption(),
-    )
-    return private_key, private_pem
+    return private_key
+
 
 @pytest.fixture
-def public_key_credentails(private_key_credentails):
+def public_key(private_key):
     """
     Returns the public key from the private key for testing purposes.
     """
-    private_key, private_key_pem = private_key_credentails
     public_key = private_key.public_key()
-    public_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    )
-    return public_key, public_pem
+    return public_key
 
 
 @pytest.fixture
-def jwks(public_key):
+def jwks(context, public_key):
     """
     Return a JWKS for testing purposes
     """
-    jwk = JsonWebKey(public_key, {"kty": "RSA"})
+    jwk = JsonWebKey.import_key(
+        public_key,
+        {
+            "kty": "RSA",
+            "kid": context.kid,
+        },
+    )
     jwks = {"keys": [jwk.as_dict()]}
-    return json.dumps(jwks.dumps(jwk, indent=2))
+    return jwks
 
 
 @pytest.fixture
-def jwt_token_factory(private_key_credentails):
+def jwt_token_factory(context, private_key):
     """
     Returns a JWT token for testing purposes
     """
-    private_key, private_key_pem = private_key_credentails
 
-    def _create_token(kid: str, roles: list[str] = None, expiry: datetime.timedelta = datetime.timedelta(hours=1)):
+    def _create_token(
+        kid: str = context.kid,
+        roles: list[str] = None,
+        expiry: datetime.timedelta = datetime.timedelta(hours=1),
+    ):
         if roles is None:
             roles = []
 
@@ -81,3 +92,34 @@ def jwt_token_factory(private_key_credentails):
         return token
 
     return _create_token
+
+
+@pytest.fixture
+def mock_jwks_call_factory(jwks, requests_mock):
+    """
+    Returns a func to create a mock request to JWKS endpoint.
+    """
+
+    def _mock_jwks_call(status_code: int = 200, headers: dict = None, json_data: dict = None):
+        """
+        Mock call to JWKS endpoint.
+        """
+        url = f"{os.environ.get("OAUTH_BASE_URL")}/.well-known/jwks.json"
+
+        if headers is None:
+            headers = { "Content-Type": "application/json" }
+        if json_data is None:
+            json_data = jwks
+
+        requests_mock.get(url, headers=headers, json=json_data, status_code=status_code)
+
+    return _mock_jwks_call
+
+
+@pytest.fixture
+def mock_jwks(mock_jwks_call_factory, jwks):
+    """
+    Returns a mock JWKS with public key generated.
+    """
+    default_response_json = jwks
+    mock_jwks_call_factory(json_data=default_response_json)

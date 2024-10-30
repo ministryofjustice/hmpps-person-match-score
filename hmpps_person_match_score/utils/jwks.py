@@ -7,6 +7,7 @@ from cachetools import TTLCache
 
 jwks_cache = TTLCache(maxsize=1, ttl=3600)
 
+
 class JWKS:
     """
     JWKS class to be used to retrieve credentials
@@ -31,7 +32,7 @@ class JWKS:
             if jwk["kid"] == kid:
                 return JsonWebKey.import_key(jwk)
 
-        raise ValueError(f"Public key for: '{kid}' not found.")
+        raise ValueError(f"Public key for kid: '{kid}' not found.")
 
     def _get_jwk_url(self):
         """
