@@ -1,10 +1,17 @@
 import datetime
 import os
+from unittest.mock import patch
 
 import jwt
 import pytest
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives.asymmetric import rsa
+
+
+@pytest.fixture(autouse=True)
+def disable_cache():
+    with patch("hmpps_person_match_score.utils.jwks.jwks_cache", {}):
+        yield
 
 
 @pytest.fixture
@@ -84,7 +91,7 @@ def jwt_token_factory(context, private_key):
         headers = {"kid": kid}
         payload = {
             "authorities": roles,
-            "exp": datetime.datetime.utcnow() + expiry,
+            "exp": datetime.datetime.now() + expiry,
             "iss": "test_issuer",
             "aud": "test_audience",
         }
@@ -107,7 +114,7 @@ def mock_jwks_call_factory(jwks, requests_mock):
         url = f"{os.environ.get("OAUTH_BASE_URL")}/.well-known/jwks.json"
 
         if headers is None:
-            headers = { "Content-Type": "application/json" }
+            headers = {"Content-Type": "application/json"}
         if json_data is None:
             json_data = jwks
 
@@ -116,7 +123,7 @@ def mock_jwks_call_factory(jwks, requests_mock):
     return _mock_jwks_call
 
 
-@pytest.fixture
+@pytest.fixture()
 def mock_jwks(mock_jwks_call_factory, jwks):
     """
     Returns a mock JWKS with public key generated.
