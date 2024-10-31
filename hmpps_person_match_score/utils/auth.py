@@ -7,7 +7,7 @@ from hmpps_person_match_score.utils.environment import EnvVars, get_env_var
 from hmpps_person_match_score.utils.jwks import JWKS
 
 
-def authorize(required_roles: list[str]):
+def authorize(required_roles: list[str] = None):
     """
     Decorator to enforce role-based access control.
     Args:
@@ -15,6 +15,8 @@ def authorize(required_roles: list[str]):
     Returns:
         Callable: Decorated function that requires authorization.
     """
+    if required_roles is None:
+        required_roles = []
 
     def decorator(f):
         @wraps(f)
@@ -45,8 +47,7 @@ def authorize(required_roles: list[str]):
                     abort(403, description="You do not have permission to access this resource.")
                 return f(*args, **kwargs)
 
-            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError) as e:
-                print(e)
+            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError):
                 abort(401, description="Invalid or expired token.")
 
         return decorated_function

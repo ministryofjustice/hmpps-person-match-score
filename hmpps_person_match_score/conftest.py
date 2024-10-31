@@ -40,6 +40,7 @@ def context():
 
         def __init__(self):
             self.kid = self.DEFAULT_KID
+            self.issuer = f"{os.environ["OAUTH_BASE_URL"]}/auth/issuer"
 
     return TestContext()
 
@@ -98,6 +99,7 @@ def jwt_token_factory(context, private_key):
     def _create_token(
         kid: str = context.kid,
         roles: list[str] = None,
+        issuer: str = context.issuer,
         expiry: datetime.timedelta = datetime.timedelta(hours=1),
     ):
         if roles is None:
@@ -107,7 +109,7 @@ def jwt_token_factory(context, private_key):
         payload = {
             "authorities": roles,
             "exp": datetime.datetime.now() + expiry,
-            "iss": f"{os.environ["OAUTH_BASE_URL"]}/auth/issuer",
+            "iss": issuer,
         }
         token = jwt.encode(payload, private_key, algorithm="RS256", headers=headers)
         return token
