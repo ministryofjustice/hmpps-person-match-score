@@ -7,6 +7,21 @@ import pytest
 from authlib.jose import JsonWebKey
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+from hmpps_person_match_score.app import MatchScoreFlaskApplication
+
+
+@pytest.fixture(scope="module")
+def app():
+    app = MatchScoreFlaskApplication().app
+    app.config.update(
+        {
+            "TESTING": True,
+        },
+    )
+    # other setup can go here
+    yield app
+    # clean up / reset resources here
+
 
 @pytest.fixture(autouse=True)
 def disable_cache():
@@ -17,7 +32,7 @@ def disable_cache():
 @pytest.fixture
 def context():
     """
-    Returns Test context to use through app
+    Returns test context to use throughout app
     """
 
     class TestContext:
@@ -92,8 +107,7 @@ def jwt_token_factory(context, private_key):
         payload = {
             "authorities": roles,
             "exp": datetime.datetime.now() + expiry,
-            "iss": "test_issuer",
-            "aud": "test_audience",
+            "iss": f"{os.environ["OAUTH_BASE_URL"]}/auth/issuer",
         }
         token = jwt.encode(payload, private_key, algorithm="RS256", headers=headers)
         return token

@@ -3,6 +3,7 @@ from functools import wraps
 import jwt
 from flask import abort, request
 
+from hmpps_person_match_score.utils.environment import EnvVars, get_env_var
 from hmpps_person_match_score.utils.jwks import JWKS
 
 
@@ -28,19 +29,26 @@ def authorize(required_roles: list[str]):
             try:
                 # Fetch the public key based on the 'kid' in the JWT header
                 public_key = JWKS().get_public_key_from_jwt(token)
+                pem_key = public_key.as_pem(is_private=False)
 
                 # Decode and validate the JWT with the public key
-                payload = jwt.decode(token, public_key, algorithms=JWKS.ALGORITHMS, audience="your_audience_here")
+                payload = jwt.decode(
+                    token,
+                    pem_key,
+                    algorithms=JWKS.ALGORITHMS,
+                    issuer=f"{get_env_var(EnvVars.OAUTH_BASE_URL_KEY)}/auth/issuer",
+                )
 
                 # Check if the required role is in the JWT's roles claim
                 user_roles = payload.get("authorities", [])
-                if required_roles not in user_roles:
+                if not set(required_roles).issubset(user_roles):
                     abort(403, description="You do not have permission to access this resource.")
                 return f(*args, **kwargs)
 
-            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError):
+            except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError) as e:
+                print(e)
                 abort(401, description="Invalid or expired token.")
 
-            return decorated_function
+        return decorated_function
 
-        return decorator
+    return decorator

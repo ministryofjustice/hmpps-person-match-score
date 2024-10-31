@@ -18,6 +18,8 @@ class TestJwks:
         token = jwt_token_factory(roles=["test_role"])
         public_key = JWKS().get_public_key_from_jwt(token)
         assert public_key is not None
+        assert public_key.kid == "test_kid"
+        assert public_key.kty == "RSA"
 
     def test_missing_oauth_env_var_throws_error(self):
         """

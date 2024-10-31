@@ -1,9 +1,9 @@
-import os
-
 import jwt
 import requests
 from authlib.jose import JsonWebKey
 from cachetools import TTLCache
+
+from hmpps_person_match_score.utils.environment import EnvVars, get_env_var
 
 jwks_cache = TTLCache(maxsize=1, ttl=3600)
 
@@ -38,7 +38,7 @@ class JWKS:
         """
         Construct JWKS URL
         """
-        return f"{self._get_env_var("OAUTH_BASE_URL")}/.well-known/jwks.json"
+        return f"{get_env_var(EnvVars.OAUTH_BASE_URL_KEY)}/.well-known/jwks.json"
 
     def _get_jwks(self):
         """
@@ -49,13 +49,3 @@ class JWKS:
             response.raise_for_status()
             jwks_cache["keys"] = response.json()["keys"]
         return jwks_cache["keys"]
-
-    @staticmethod
-    def _get_env_var(key):
-        """
-        Helper function to retrieve an environment variable.
-        """
-        env_var = os.environ.get(key)
-        if not env_var:
-            raise ValueError(f"Missing environment variable: {key}")
-        return env_var
