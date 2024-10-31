@@ -5,8 +5,10 @@ from splink import DuckDBAPI, Linker
 from werkzeug import exceptions
 
 from hmpps_person_match_score.domain.events import Events
+from hmpps_person_match_score.domain.roles import Roles
 from hmpps_person_match_score.domain.splink_models import SplinkModels
 from hmpps_person_match_score.models.person_match_model import PersonMatching
+from hmpps_person_match_score.utils.auth import authorize
 from hmpps_person_match_score.views.base_view import BaseView
 
 
@@ -30,6 +32,7 @@ class PersonMatchView(BaseView):
         ],
     )
 
+    @authorize(required_roles=[Roles.ROLE_PERSON_MATCH])
     def post(self):
         """
         POST request handler
@@ -37,7 +40,7 @@ class PersonMatchView(BaseView):
         try:
             self.logger.info(Events.PERSON_MATCH_SCORE_REQUESTED)
             person_match_model = self.validate(model=PersonMatching)
-            result = self.match(person_match_model)
+            result = self._match(person_match_model)
             self.logger.info(
                 Events.PERSON_MATCH_SCORE_GENERATED,
                 extra={"custom_dimensions": json.dumps(result.get("match_probability"))},
@@ -49,7 +52,7 @@ class PersonMatchView(BaseView):
             self.logger.exception(f"{__name__}: Exception at match endpoint")  # noqa: G004
             return e.args[0], 500
 
-    def match(self, person_match_model: PersonMatching):
+    def _match(self, person_match_model: PersonMatching):
         """
         Match records
         """

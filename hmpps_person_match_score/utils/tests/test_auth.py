@@ -1,9 +1,9 @@
+import datetime
 from http import HTTPStatus
 
-import datetime
 import pytest
-from werkzeug.exceptions import Unauthorized, Forbidden
 from flask import Response
+from werkzeug.exceptions import Forbidden, Unauthorized
 
 from hmpps_person_match_score.utils.auth import authorize
 
