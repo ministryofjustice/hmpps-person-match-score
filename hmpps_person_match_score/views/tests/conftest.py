@@ -6,6 +6,7 @@ from flask import Response
 def client(app):
     return app.test_client()
 
+
 @pytest.fixture()
 def post_to_endpoint(client, jwt_token_factory, mock_jwks):
     def _call_endpoint(
