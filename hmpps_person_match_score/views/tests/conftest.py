@@ -1,29 +1,21 @@
-import os
-
 import pytest
-
-from hmpps_person_match_score.app import MatchScoreFlaskApplication
-
-
-def pytest_generate_tests(metafunc):
-    os.environ["APP_BUILD_NUMBER"] = "number"
-    os.environ["APP_GIT_REF"] = "ref"
-    os.environ["APP_GIT_BRANCH"] = "branch"
-
-
-@pytest.fixture(scope="module")
-def app():
-    app = MatchScoreFlaskApplication().app
-    app.config.update(
-        {
-            "TESTING": True,
-        },
-    )
-    # other setup can go here
-    yield app
-    # clean up / reset resources here
+from flask import Response
 
 
 @pytest.fixture(scope="module")
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture()
+def post_to_endpoint(client, jwt_token_factory, mock_jwks):
+    def _call_endpoint(
+        route: str,
+        json: dict,
+        roles: list[str] = None,
+    ) -> Response:
+        token = jwt_token_factory(roles=roles)
+        headers = {"Authorization": f"Bearer {token}"}
+        return client.post(route, json=json, headers=headers)
+
+    return _call_endpoint

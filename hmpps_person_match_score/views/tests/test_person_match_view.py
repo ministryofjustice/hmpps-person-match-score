@@ -1,5 +1,6 @@
 import pytest
 
+from hmpps_person_match_score.domain.roles import Roles
 from hmpps_person_match_score.views.person_match_view import PersonMatchView
 
 
@@ -47,8 +48,8 @@ class TestPersonMatchView:
             ],
         }
 
-    def test_complete_message(self, client):
-        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+    def test_complete_message(self, post_to_endpoint):
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 200
         assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.999353426
@@ -75,43 +76,43 @@ class TestPersonMatchView:
         assert response.json["pnc_r"]["0"] is None
         assert response.json["gamma_pnc"]["0"] == -1
 
-    def test_fuzzy_match_on_first_name(self, client):
+    def test_fuzzy_match_on_first_name(self, post_to_endpoint):
         self.exact_match["matching_to"][0]["firstname1"] = "Jayne"
-        response = client.post(PersonMatchView.ROUTE, json=self.exact_match)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.exact_match)
         assert response.status_code == 200
         assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.9999999001
         assert response.json["firstname1_l"]["0"] == "Jane"
         assert response.json["firstname1_r"]["0"] == "Jayne"
 
-    def test_fuzzy_match_on_last_name(self, client):
+    def test_fuzzy_match_on_last_name(self, post_to_endpoint):
         self.exact_match["matching_to"][0]["lastname"] = "Smythe"
-        response = client.post(PersonMatchView.ROUTE, json=self.exact_match)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.exact_match)
         assert response.status_code == 200
         assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.9999997925
         assert response.json["lastname_l"]["0"] == "Smith"
         assert response.json["lastname_r"]["0"] == "Smythe"
 
-    def test_fuzzy_match_on_pnc(self, client):
+    def test_fuzzy_match_on_pnc(self, post_to_endpoint):
         self.exact_match["matching_to"][0]["pnc"] = "2003/0141640Y"
-        response = client.post(PersonMatchView.ROUTE, json=self.exact_match)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.exact_match)
         assert response.status_code == 200
         assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.999999481
         assert response.json["pnc_l"]["0"] == "2001/0141640Y"
         assert response.json["pnc_r"]["0"] == "2003/0141640Y"
 
-    def test_fuzzy_match_on_dob(self, client):
+    def test_fuzzy_match_on_dob(self, post_to_endpoint):
         self.exact_match["matching_to"][0]["dob"] = "2009-08-07"
-        response = client.post(PersonMatchView.ROUTE, json=self.exact_match)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.exact_match)
         assert response.status_code == 200
         assert response.headers.get("Content-Type") == "application/json"
         assert response.json["match_probability"]["0"] == 0.999989593
         assert response.json["dob_l"]["0"] == "2009-07-06"
         assert response.json["dob_r"]["0"] == "2009-08-07"
 
-    def test_handles_multiple_records(self, client):
+    def test_handles_multiple_records(self, post_to_endpoint):
         multiple_records = [
             {
                 "unique_id": f"{i}",
@@ -123,27 +124,35 @@ class TestPersonMatchView:
             for i in range(1, 100)
         ]
         self.valid_sample["matching_to"] = multiple_records
-        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 200
         assert len(response.json["match_probability"]) == 99
         assert all([x == 0.999353426 for x in response.json["match_probability"].values()])
 
-    def test_validation_error_no_matching_to(self, client):
+    def test_validation_error_no_matching_to(self, post_to_endpoint):
         del self.valid_sample["matching_to"]
-        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
 
-    def test_validation_error_no_matching_from(self, client):
+    def test_validation_error_no_matching_from(self, post_to_endpoint):
         del self.valid_sample["matching_from"]
-        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
 
-    def test_validation_error_not_as_list(self, client):
+    def test_validation_error_not_as_list(self, post_to_endpoint):
         self.valid_sample["matching_to"] = {
             "firstname1": "Lily",
             "lastname": "Robinson",
             "dob": "2009-07-06",
             "pnc": "2001/0141640Y",
         }
-        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
+
+    def test_invalid_role_returns_forbidden(self, post_to_endpoint):
+        response = post_to_endpoint(PersonMatchView.ROUTE, roles=["Invalid Role"], json=self.valid_sample)
+        assert response.status_code == 403
+
+    def test_no_auth_returns_unauthorized(self, client):
+        response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
+        assert response.status_code == 401
