@@ -14,7 +14,7 @@ class JWKS:
     """
 
     ALGORITHMS = ["RS256"]
-    TIMEOUT = 300
+    TIMEOUT = 30
 
     def __init__(self):
         self._jwk_url = self._get_jwk_url()
