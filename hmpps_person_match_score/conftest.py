@@ -127,7 +127,7 @@ def mock_jwks_call_factory(jwks, requests_mock):
         """
         Mock call to JWKS endpoint.
         """
-        url = f"{os.environ.get("OAUTH_BASE_URL")}/.well-known/jwks.json"
+        url = f"{os.environ.get("OAUTH_BASE_URL")}/auth/.well-known/jwks.json"
 
         if headers is None:
             headers = {"Content-Type": "application/json"}
