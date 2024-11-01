@@ -38,7 +38,7 @@ class JWKS:
         """
         Construct JWKS URL
         """
-        return f"{get_env_var(EnvVars.OAUTH_BASE_URL_KEY)}/.well-known/jwks.json"
+        return f"{get_env_var(EnvVars.OAUTH_BASE_URL_KEY)}/auth/.well-known/jwks.json"
 
     def _get_jwks(self):
         """
