@@ -2,6 +2,7 @@ import os
 
 import pytest
 import requests
+import requests_mock
 
 from hmpps_person_match_score.utils.jwks import JWKS
 
@@ -48,3 +49,21 @@ class TestJwks:
         token = jwt_token_factory()
         with pytest.raises(requests.exceptions.HTTPError):
             JWKS().get_public_key_from_jwt(token)
+
+    @pytest.mark.parametrize("status_code", [429, 500, 502, 503, 504])
+    def test_retry_on_error_from_jwks_endpoint(self, status_code, jwt_token_factory, jwks):
+        """
+        Test that an error is raised is retried and succeeds
+        """
+        token = jwt_token_factory()
+        with requests_mock.Mocker() as mock:
+            response_list = [
+                {"status_code": status_code, "headers": {"Content-Type": "application/json"}},
+                {"status_code": status_code, "headers": {"Content-Type": "application/json"}},
+                {"status_code": 200, "headers": {"Content-Type": "application/json"}, "json": jwks},
+            ]
+            mock_requests = mock.get(f"{os.environ.get("OAUTH_BASE_URL")}/auth/.well-known/jwks.json", response_list)
+
+            jwk = JWKS().get_public_key_from_jwt(token)
+            assert jwk is not None
+            assert mock_requests.call_count == 3

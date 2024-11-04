@@ -24,10 +24,12 @@ class TestRetry:
         Test retries on exceptions until successful
         """
         mock_func = Mock(
-            side_effect=[ValueError("A value error occurred"),
-                         ValueError("A value error occurred"),
-                         "Third time lucky"],
-            )
+            side_effect=[
+                ValueError("A value error occurred"),
+                ValueError("A value error occurred"),
+                "Third time lucky",
+            ],
+        )
         result = RetryExecutor.retry(mock_func)
         assert result == "Third time lucky"
         assert mock_func.call_count == 3
