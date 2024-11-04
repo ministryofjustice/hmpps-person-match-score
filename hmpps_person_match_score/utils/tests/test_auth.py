@@ -1,9 +1,7 @@
 import datetime
 from http import HTTPStatus
 
-import pytest
 from flask import Response
-from werkzeug.exceptions import Forbidden, Unauthorized
 
 from hmpps_person_match_score.utils.auth import authorize
 
@@ -65,9 +63,11 @@ class TestAuth:
         """
         token = jwt_token_factory(roles=[self.TEST_ROLE], expiry=datetime.timedelta(seconds=-1))
         token_header = {"Authorization": f"Bearer {token}"}
-        with app.test_request_context(headers=token_header), pytest.raises(Unauthorized) as exception:
-            self.method_with_single_role()
-            assert exception.message == "Invalid or expired token."
+        with app.test_request_context(headers=token_header):
+            response = self.method_with_single_role()
+            assert response.status_code == HTTPStatus.UNAUTHORIZED
+            assert response.json["timestamp"] is not None
+            assert response.json["error_message"] == "Invalid or expired token."
 
     def test_forbidden_when_user_does_not_have_role(self, app, jwt_token_factory, mock_jwks):
         """
@@ -76,9 +76,10 @@ class TestAuth:
         """
         token = jwt_token_factory(roles=["DIFFERENT_ROLE"])
         token_header = {"Authorization": f"Bearer {token}"}
-        with app.test_request_context(headers=token_header), pytest.raises(Forbidden) as exception:
-            self.method_with_single_role()
-            assert exception.message == "Invalid or expired token."
+        with app.test_request_context(headers=token_header):
+            response = self.method_with_single_role()
+            assert response.status_code == HTTPStatus.FORBIDDEN
+            assert response.json["error_message"] == "You do not have permission to access this resource."
 
     def test_unauthorized_when_wrong_(self, app, jwt_token_factory, mock_jwks):
         """
@@ -86,6 +87,7 @@ class TestAuth:
         """
         token = jwt_token_factory(roles=[self.TEST_ROLE], issuer="invalid issuer")
         token_header = {"Authorization": f"Bearer {token}"}
-        with app.test_request_context(headers=token_header), pytest.raises(Unauthorized) as exception:
-            self.method_with_single_role()
-            assert exception.message == "Invalid or expired token."
+        with app.test_request_context(headers=token_header):
+            response = self.method_with_single_role()
+            assert response.status_code == HTTPStatus.UNAUTHORIZED
+            assert response.json["error_message"] == "Invalid or expired token."
