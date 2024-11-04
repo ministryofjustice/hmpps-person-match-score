@@ -30,8 +30,7 @@ def authorize(required_roles: list[str] = None):
             # Get the JWT from the Authorization header
             auth_header = request.headers.get("Authorization")
             if not auth_header or not auth_header.startswith("Bearer "):
-                return _return_auth_error(HTTPStatus.UNAUTHORIZED,
-                                          "Authorization token is missing or invalid.")
+                return _return_auth_error(HTTPStatus.UNAUTHORIZED, "Authorization token is missing or invalid.")
 
             token = auth_header.split(" ")[1]
 
@@ -51,8 +50,9 @@ def authorize(required_roles: list[str] = None):
                 # Check if the required role is in the JWT's roles claim
                 user_roles = payload.get("authorities", [])
                 if not set(required_roles).issubset(user_roles):
-                    return _return_auth_error(HTTPStatus.FORBIDDEN,
-                                              "You do not have permission to access this resource.")
+                    return _return_auth_error(
+                        HTTPStatus.FORBIDDEN, "You do not have permission to access this resource.",
+                    )
                 return f(*args, **kwargs)
 
             except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError):
@@ -64,11 +64,13 @@ def authorize(required_roles: list[str] = None):
             return Response(
                 status=status,
                 mimetype="application/json",
-                response=json.dumps({
-                    "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                    "error_message": error_message,
-                    "status_code": status,
-                }),
+                response=json.dumps(
+                    {
+                        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                        "error_message": error_message,
+                        "status_code": status,
+                    },
+                ),
             )
 
         return decorated_function
