@@ -51,7 +51,8 @@ def authorize(required_roles: list[str] = None):
                 user_roles = payload.get("authorities", [])
                 if not set(required_roles).issubset(user_roles):
                     return _return_auth_error(
-                        HTTPStatus.FORBIDDEN, "You do not have permission to access this resource.",
+                        HTTPStatus.FORBIDDEN,
+                        "You do not have permission to access this resource.",
                     )
                 return f(*args, **kwargs)
 

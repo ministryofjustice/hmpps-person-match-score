@@ -1,5 +1,5 @@
+import asyncio
 import random
-import time
 from typing import Callable
 
 
@@ -16,7 +16,7 @@ class RetryExecutor:
     JITTER_MAX = 1.2
 
     @classmethod
-    def retry(
+    async def retry(
         cls,
         action: Callable,
         retry_exceptions: tuple = (Exception,),
@@ -35,4 +35,4 @@ class RetryExecutor:
                     raise exception
                 jitter = random.uniform(cls.JITTER_MIN, cls.JITTER_MAX)  # noqa: S311
                 delay = min(base_delay * pow(2, attempt), max_delay) * jitter
-                time.sleep(delay / 1000)
+                await asyncio.sleep(delay / 1000)

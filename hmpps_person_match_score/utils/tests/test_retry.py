@@ -1,3 +1,4 @@
+import asyncio
 from unittest.mock import Mock
 
 import pytest
@@ -15,7 +16,7 @@ class TestRetry:
         Test returns result straight away when successful
         """
         mock_func = Mock(return_value="Always succeeds")
-        result = RetryExecutor.retry(mock_func)
+        result = asyncio.run(RetryExecutor.retry(mock_func))
         assert result == "Always succeeds"
         mock_func.assert_called_once()
 
@@ -30,7 +31,7 @@ class TestRetry:
                 "Third time lucky",
             ],
         )
-        result = RetryExecutor.retry(mock_func)
+        result = asyncio.run(RetryExecutor.retry(mock_func))
         assert result == "Third time lucky"
         assert mock_func.call_count == 3
 
@@ -40,7 +41,7 @@ class TestRetry:
         """
         mock_func = Mock(side_effect=ValueError("Always failes"))
         with pytest.raises(ValueError):
-            RetryExecutor.retry(mock_func)
+            asyncio.run(RetryExecutor.retry(mock_func))
         assert mock_func.call_count == 3
 
     def test_immediate_failure_on_different_exception(self):
@@ -50,5 +51,5 @@ class TestRetry:
         mock_func = Mock(side_effect=TypeError("A type error occurred"))
 
         with pytest.raises(TypeError):
-            RetryExecutor.retry(mock_func, max_attempts=3, retry_exceptions=(ValueError,))
+            asyncio.run(RetryExecutor.retry(mock_func, max_attempts=3, retry_exceptions=(ValueError,)))
         mock_func.assert_called_once()
