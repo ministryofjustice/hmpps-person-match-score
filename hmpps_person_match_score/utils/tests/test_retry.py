@@ -34,9 +34,9 @@ class TestRetry:
         assert result == "Third time lucky"
         assert mock_func.call_count == 3
 
-    def test_max_attempts_reached(self):
+    def test_max_retries_reached(self):
         """
-        Test raises exception when max attempts reached
+        Test raises exception when max retries reached
         """
         mock_func = Mock(side_effect=ValueError("Always failes"))
         with pytest.raises(ValueError):

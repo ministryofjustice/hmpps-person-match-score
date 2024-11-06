@@ -16,7 +16,7 @@ class JWKS:
     """
 
     ALGORITHMS = ["RS256"]
-    TIMEOUT = 30
+    TIMEOUT = 10
 
     RETRY_EXCEPTIONS = (
         rq_ex.Timeout,
