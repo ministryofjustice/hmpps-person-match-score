@@ -3,6 +3,7 @@ import os
 import pytest
 import requests
 import requests_mock
+from requests.exceptions import ConnectionError, Timeout
 
 from hmpps_person_match_score.utils.jwks import JWKS
 
@@ -60,6 +61,24 @@ class TestJwks:
             response_list = [
                 {"status_code": status_code, "headers": {"Content-Type": "application/json"}},
                 {"status_code": status_code, "headers": {"Content-Type": "application/json"}},
+                {"status_code": 200, "headers": {"Content-Type": "application/json"}, "json": jwks},
+            ]
+            mock_requests = mock.get(f"{os.environ.get("OAUTH_BASE_URL")}/auth/.well-known/jwks.json", response_list)
+
+            jwk = JWKS().get_public_key_from_jwt(token)
+            assert jwk is not None
+            assert mock_requests.call_count == 3
+
+    @pytest.mark.parametrize("exception", [ConnectionError, Timeout])
+    def test_retry_on_request_exceptions(self, exception, jwt_token_factory, jwks):
+        """
+        Test that an error is raised is retried and succeeds
+        """
+        token = jwt_token_factory()
+        with requests_mock.Mocker() as mock:
+            response_list = [
+                {"exc": exception},
+                {"exc": exception},
                 {"status_code": 200, "headers": {"Content-Type": "application/json"}, "json": jwks},
             ]
             mock_requests = mock.get(f"{os.environ.get("OAUTH_BASE_URL")}/auth/.well-known/jwks.json", response_list)
