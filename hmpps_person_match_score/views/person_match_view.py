@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 import pyarrow as pa
 from splink import DuckDBAPI, Linker
@@ -47,10 +48,10 @@ class PersonMatchView(BaseView):
             )
             return result
         except exceptions.BadRequest as e:
-            return str(e), 400
+            return self.return_error(e.code, e.description)
         except Exception as e:
-            self.logger.exception(f"{__name__}: Exception at match endpoint")  # noqa: G004
-            return e.args[0], 500
+            self.logger.exception(f"{__name__}: Exception at match endpoint, error: {str(e)}")  # noqa: G004
+            return self.return_error(HTTPStatus.INTERNAL_SERVER_ERROR, e.args[0])
 
     def _match(self, person_match_model: PersonMatching):
         """
