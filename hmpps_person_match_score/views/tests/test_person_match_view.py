@@ -133,11 +133,20 @@ class TestPersonMatchView:
         del self.valid_sample["matching_to"]
         response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
+        assert (
+            response.json["error_message"]
+            == "The browser (or proxy) sent a request that this server could not understand."
+        )
+        assert response.json["timestamp"] is not None
 
     def test_validation_error_no_matching_from(self, post_to_endpoint):
         del self.valid_sample["matching_from"]
         response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
+        assert (
+            response.json["error_message"]
+            == "The browser (or proxy) sent a request that this server could not understand."
+        )
 
     def test_validation_error_not_as_list(self, post_to_endpoint):
         self.valid_sample["matching_to"] = {
@@ -148,11 +157,17 @@ class TestPersonMatchView:
         }
         response = post_to_endpoint(PersonMatchView.ROUTE, roles=[Roles.ROLE_PERSON_MATCH], json=self.valid_sample)
         assert response.status_code == 400
+        assert (
+            response.json["error_message"]
+            == "The browser (or proxy) sent a request that this server could not understand."
+        )
 
     def test_invalid_role_returns_forbidden(self, post_to_endpoint):
         response = post_to_endpoint(PersonMatchView.ROUTE, roles=["Invalid Role"], json=self.valid_sample)
         assert response.status_code == 403
+        assert response.json["error_message"] == "You do not have permission to access this resource."
 
     def test_no_auth_returns_unauthorized(self, client):
         response = client.post(PersonMatchView.ROUTE, json=self.valid_sample)
         assert response.status_code == 401
+        assert response.json["error_message"] == "Authorization token is missing or invalid."

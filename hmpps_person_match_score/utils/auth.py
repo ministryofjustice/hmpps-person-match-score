@@ -1,5 +1,3 @@
-import datetime
-import json
 import logging
 from functools import wraps
 from http import HTTPStatus
@@ -7,6 +5,8 @@ from http import HTTPStatus
 import jwt
 from flask import Response, request
 
+from hmpps_person_match_score.domain.constants.error_messages import ErrorMessages
+from hmpps_person_match_score.models.error_response_model import ErrorResponse
 from hmpps_person_match_score.utils.environment import EnvVars, get_env_var
 from hmpps_person_match_score.utils.jwks import JWKS
 
@@ -30,7 +30,7 @@ def authorize(required_roles: list[str] = None):
             # Get the JWT from the Authorization header
             auth_header = request.headers.get("Authorization")
             if not auth_header or not auth_header.startswith("Bearer "):
-                return _return_auth_error(HTTPStatus.UNAUTHORIZED, "Authorization token is missing or invalid.")
+                return _return_auth_error(HTTPStatus.UNAUTHORIZED, ErrorMessages.INVALID_AUTH_HEADER)
 
             token = auth_header.split(" ")[1]
 
@@ -52,12 +52,12 @@ def authorize(required_roles: list[str] = None):
                 if not set(required_roles).issubset(user_roles):
                     return _return_auth_error(
                         HTTPStatus.FORBIDDEN,
-                        "You do not have permission to access this resource.",
+                        ErrorMessages.FORBIDDEN,
                     )
                 return f(*args, **kwargs)
 
             except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, ValueError):
-                return _return_auth_error(HTTPStatus.UNAUTHORIZED, "Invalid or expired token.")
+                return _return_auth_error(HTTPStatus.UNAUTHORIZED, ErrorMessages.INVALID_OR_EXPIRED_TOKEN)
 
         def _return_auth_error(status: HTTPStatus, error_message: str) -> Response:
             log_message = f"Authentication Error: {status} {error_message}"
@@ -65,13 +65,10 @@ def authorize(required_roles: list[str] = None):
             return Response(
                 status=status,
                 mimetype="application/json",
-                response=json.dumps(
-                    {
-                        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-                        "error_message": error_message,
-                        "status_code": status,
-                    },
-                ),
+                response=ErrorResponse(
+                    error_message=error_message,
+                    status_code=status,
+                ).model_dump_json(),
             )
 
         return decorated_function

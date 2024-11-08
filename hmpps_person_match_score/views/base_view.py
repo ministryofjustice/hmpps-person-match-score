@@ -7,6 +7,7 @@ from pydantic import BaseModel, ValidationError
 from werkzeug.exceptions import BadRequest
 
 from hmpps_person_match_score.domain.splink_models import SplinkModels
+from hmpps_person_match_score.models.error_response_model import ErrorResponse
 
 
 class BaseView(MethodView):
@@ -31,7 +32,20 @@ class BaseView(MethodView):
         try:
             return model(**self.request.json)
         except ValidationError as err:
-            raise BadRequest("Message in incorrect format") from err
+            raise BadRequest() from err
+
+    def return_error(self, status: int, message: str) -> flask.Response:
+        """
+        Return flask response with error message
+        """
+        return flask.Response(
+            status=status,
+            mimetype="application/json",
+            response=ErrorResponse(
+                error_message=message,
+                status_code=status,
+            ).model_dump_json(),
+        )
 
     @staticmethod
     def get_model_path(model: SplinkModels):
