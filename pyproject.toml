@@ -23,7 +23,7 @@ pydantic = "^2.7.4"
 gevent = "^24.2.1"
 pyjwt = "^2.9.0"
 authlib = "^1.3.2"
-cryptography = "^43.0.3"
+cryptography = "^44.0.0"
 cachetools = "^5.5.0"
 
 [tool.poetry.dev-dependencies]
