@@ -65,8 +65,17 @@ class JWKS:
         Get the keys from the JWKS endpoint
         """
         if "keys" not in jwks_cache:
-            response = asyncio.run(
+            response = self._get_event_loop().run_until_complete(
                 RetryExecutor.retry(self._call_jwks_endpoint, retry_exceptions=self.RETRY_EXCEPTIONS),
             )
             jwks_cache["keys"] = response.json()["keys"]
         return jwks_cache["keys"]
+
+    @staticmethod
+    def _get_event_loop():
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        return loop

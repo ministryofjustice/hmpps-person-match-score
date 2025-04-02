@@ -8,6 +8,11 @@ generic-service:
     tag: latest # override at deployment time
     port: 5000
 
+  resources:
+    requests:
+      cpu: 2
+      memory: 1Gi
+
   ingress:
     enabled: true
     host: app-hostname.local # override per environment
