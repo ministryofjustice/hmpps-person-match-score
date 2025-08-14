@@ -63,11 +63,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: unit-test-results
-          path: test_results/pytest-unit-test-report.xml
+          path: test_results
 
   build:
     name: Build docker image from hmpps-github-actions
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     with:
       docker_registry: 'ghcr.io'
@@ -76,17 +76,16 @@ jobs:
       push: ${{ github.ref == 'refs/heads/main' }}
       docker_multiplatform: false
 
-#
-#  deploy_dev:
-#    name: Deploy to the development environment
+
+  deploy_dev:
+    name: Deploy to the development environment
 #    if: github.ref == 'refs/heads/main'
-#    needs:
-#      - build
-#      - helm_lint
-#      - test
-#      - int-test
-#    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
-#    secrets: inherit
-#    with:
-#      environment: 'dev'
-#      app_version: '${{ needs.build.outputs.app_version }}'
+    needs:
+      - build
+      - helm_lint
+      - test
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    secrets: inherit
+    with:
+      environment: 'dev'
+      app_version: '${{ needs.build.outputs.app_version }}'
