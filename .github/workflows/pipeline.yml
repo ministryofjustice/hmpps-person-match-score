@@ -67,7 +67,7 @@ jobs:
 
   build:
     name: Build docker image from hmpps-github-actions
-#    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
     with:
       docker_registry: 'ghcr.io'
@@ -79,7 +79,7 @@ jobs:
 
   deploy_dev:
     name: Deploy to the development environment
-#    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     needs:
       - build
       - helm_lint
