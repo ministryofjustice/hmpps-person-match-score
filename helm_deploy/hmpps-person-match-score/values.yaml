@@ -9,8 +9,8 @@ generic-service:
     port: 5000
 
   imagePullSecrets:
-    name: dockerconfigjson-github-com
-    
+    - name: dockerconfigjson-github-com
+
   resources:
     requests:
       cpu: 2
