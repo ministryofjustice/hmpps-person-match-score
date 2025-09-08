@@ -136,19 +136,19 @@ typing-extensions = ">=4.0.0"
 
 [[package]]
 name = "azure-monitor-opentelemetry"
-version = "1.7.0"
+version = "1.8.0"
 description = "Microsoft Azure Monitor Opentelemetry Distro Client Library for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "azure_monitor_opentelemetry-1.7.0-py3-none-any.whl", hash = "sha256:937c60e9706f75c77b221979a273a27e811cc6529d6887099f53916719c66dd3"},
-    {file = "azure_monitor_opentelemetry-1.7.0.tar.gz", hash = "sha256:eba75e793a95d50f6e5bc35dd2781744e2c1a5cc801b530b688f649423f2ee00"},
+    {file = "azure_monitor_opentelemetry-1.8.0-py3-none-any.whl", hash = "sha256:b57846a4a325f580d47f24b3f9e7b165b2d8d9524e53618ec941ec133e2d4b09"},
+    {file = "azure_monitor_opentelemetry-1.8.0.tar.gz", hash = "sha256:25623a69e208e6fdf869c0fbfd98c4b2661a7eb412d098b632e7bbd047921fe1"},
 ]
 
 [package.dependencies]
 azure-core = ">=1.28.0,<2.0.0"
 azure-core-tracing-opentelemetry = ">=1.0.0b11,<1.1.0"
-azure-monitor-opentelemetry-exporter = ">=1.0.0b40,<1.1.0"
+azure-monitor-opentelemetry-exporter = ">=1.0.0b41,<1.1.0"
 opentelemetry-instrumentation-django = ">=0.57b0,<1.0"
 opentelemetry-instrumentation-fastapi = ">=0.57b0,<1.0"
 opentelemetry-instrumentation-flask = ">=0.57b0,<1.0"
