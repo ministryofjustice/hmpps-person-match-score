@@ -2120,13 +2120,13 @@ files = [
 
 [[package]]
 name = "splink"
-version = "4.0.8"
+version = "4.0.9"
 description = "Fast probabilistic data linkage at scale"
 optional = false
 python-versions = "<4.0.0,>=3.8.0"
 files = [
-    {file = "splink-4.0.8-py3-none-any.whl", hash = "sha256:fbba32b8065d523e8ab56b46009dcd3d1d627a7641e8b06f14aadd381aaa9f0e"},
-    {file = "splink-4.0.8.tar.gz", hash = "sha256:84f4ad5a1d86c42837de60b662904c74ba27b1a8c6dde2042551dcc57ade5f25"},
+    {file = "splink-4.0.9-py3-none-any.whl", hash = "sha256:4590d7ef2c4cf797d4c756bb9c924ad8a6d0af21c0439cf23b3943303677604d"},
+    {file = "splink-4.0.9.tar.gz", hash = "sha256:9e55672c89cc5f348ad2ab59df3db0079ee800ae7732eb6ead94efd372017ec0"},
 ]
 
 [package.dependencies]
