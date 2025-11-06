@@ -1,5 +1,7 @@
 # HMPPS Person Match Score API
 
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/hmpps-person-match-score/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/hmpps-person-match-score)
+
 An API wrapper around a model developed by the MoJ Analytical Platform for scoring the confidence 
 of people matches across MoJ systems.
 
