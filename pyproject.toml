@@ -27,7 +27,7 @@ cryptography = "^46.0.0"
 cachetools = "^6.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^8.0.0"
+pytest = "^9.0.0"
 ruff = "^0.14.0"
 requests-mock = "^1.12.1"
 
