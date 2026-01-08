@@ -76,6 +76,18 @@ requests
 | where cloud_RoleName == 'hmpps-person-match-score'
 ```
 
+## Dependency updates
+
+If you need to update a transitive dependency to fix a CVE
+
+0. check you have installed poetry as per the instructions above
+1. `poetry add dependencytoupdate@desiredversion`
+2. `git checkout  pyproject.toml`
+3. `poetry lock`
+
+This should result in a change to the poetry lock file only, updating the transitive dependency
+
+
 ## Notes
 
 * Ported from a [PoC using AWS Lambda](https://github.com/moj-analytical-services/pic_scoring_prototype_python)
