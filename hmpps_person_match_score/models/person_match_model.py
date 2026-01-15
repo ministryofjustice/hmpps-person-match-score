@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated
 
 from annotated_types import Len
 from pydantic import BaseModel
@@ -10,12 +10,12 @@ class Person(BaseModel):
     """
 
     unique_id: str
-    pnc: Optional[str] = None
-    dob: Optional[str] = None
-    lastname: Optional[str] = None
-    firstname1: Optional[str] = None
-    firstname2: Optional[str] = None
-    firstname3: Optional[str] = None
+    pnc: str | None = None
+    dob: str | None = None
+    lastname: str | None = None
+    firstname1: str | None = None
+    firstname2: str | None = None
+    firstname3: str | None = None
 
 
 class MatchingFromPerson(Person):
