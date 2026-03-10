@@ -62,13 +62,13 @@ files = [
 
 [[package]]
 name = "authlib"
-version = "1.6.8"
+version = "1.6.9"
 description = "The ultimate Python library in building OAuth and OpenID Connect servers and clients."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "authlib-1.6.8-py2.py3-none-any.whl", hash = "sha256:97286fd7a15e6cfefc32771c8ef9c54f0ed58028f1322de6a2a7c969c3817888"},
-    {file = "authlib-1.6.8.tar.gz", hash = "sha256:41ae180a17cf672bc784e4a518e5c82687f1fe1e98b0cafaeda80c8e4ab2d1cb"},
+    {file = "authlib-1.6.9-py2.py3-none-any.whl", hash = "sha256:f08b4c14e08f0861dc18a32357b33fbcfd2ea86cfe3fe149484b4d764c4a0ac3"},
+    {file = "authlib-1.6.9.tar.gz", hash = "sha256:d8f2421e7e5980cc1ddb4e32d3f5fa659cfaf60d8eaf3281ebed192e4ab74f04"},
 ]
 
 [package.dependencies]
@@ -183,13 +183,13 @@ files = [
 
 [[package]]
 name = "cachetools"
-version = "7.0.3"
+version = "7.0.5"
 description = "Extensible memoizing collections and decorators"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "cachetools-7.0.3-py3-none-any.whl", hash = "sha256:c128ffca156eef344c25fcd08a96a5952803786fa33097f5f2d49edf76f79d53"},
-    {file = "cachetools-7.0.3.tar.gz", hash = "sha256:8c246313b95849964e54a909c03b327a87ab0428b068fac10da7b105ca275ef6"},
+    {file = "cachetools-7.0.5-py3-none-any.whl", hash = "sha256:46bc8ebefbe485407621d0a4264b23c080cedd913921bad7ac3ed2f26c183114"},
+    {file = "cachetools-7.0.5.tar.gz", hash = "sha256:0cd042c24377200c1dcd225f8b7b12b0ca53cc2c961b43757e774ebe190fd990"},
 ]
 
 [[package]]
