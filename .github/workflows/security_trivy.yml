@@ -2,7 +2,7 @@ name: Security trivy dependency check
 on:
   workflow_dispatch:
   schedule:
-    - cron: "34 7 * * 1-5" # Every weekday
+    - cron: "33 7 * * 1-5" # Every weekday
 
 permissions:
   packages: read
