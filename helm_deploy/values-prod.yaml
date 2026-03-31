@@ -1,6 +1,6 @@
 ---
 generic-service:
-  replicaCount: 8
+  replicaCount: 2
 
   ingress:
     host: hmpps-person-match-score.hmpps.service.justice.gov.uk
