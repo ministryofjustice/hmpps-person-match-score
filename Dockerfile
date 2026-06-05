@@ -10,9 +10,6 @@ ENV APP_BUILD_NUMBER=${BUILD_NUMBER} \
     APP_GIT_REF=${GIT_REF} \
     APP_GIT_BRANCH=${GIT_BRANCH}
 
-RUN apt-get update \
-    && apt-get -y upgrade 
-
 # Update pip
 RUN pip install --upgrade pip
 
@@ -48,7 +45,8 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 # BUILD stage
 ##############
 FROM base AS build
-RUN apt-get install --no-install-recommends -y \
+RUN apk upgrade --no-cache
+RUN apk add \
         # deps for installing poetry
         curl \
         # deps for building python deps
