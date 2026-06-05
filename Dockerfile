@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.14.5-alpine3.23 AS base
+FROM python:3.14.5-slim-bookworm AS base
 
 # load in build details
 ARG BUILD_NUMBER
